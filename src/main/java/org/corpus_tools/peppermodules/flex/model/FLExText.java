@@ -1,49 +1,205 @@
 package org.corpus_tools.peppermodules.flex.model;
 
+import org.corpus_tools.peppermodules.flex.FLExImporter;
+
 /**
-* This interface is a dictionary for files following the model of FLExText.
-*
-* @author XMLTagExtractor
-**/
+ * This interface is a dictionary for files following the model of FLExText.
+ * 
+ * The FLExText model has the following structure:
+ * 
+ * - `document`
+ * 	- `interlinear-text` *
+ * 		- `item`
+ * 		- `item`
+ * 		- ...
+ * 		- `paragraphs`
+ * 			- `paragraph`
+ * 				- `phrases`
+ * 					- `phrase`
+ * 						- `item`
+ * 						- `item`
+ * 						- ...
+ * 						- `words`
+ * 							- `word`
+ * 								- `item`
+ * 								- `item`
+ * 								- ... (?)
+ * 								- `morphemes`
+ * 									- `morph`
+ * 										- `item`
+ * 										- `item`
+ * 										- ...
+ * 									- `morph`
+ * 									- ...
+ * 							- `word`
+ * 							- ...
+ * 					- `phrase`
+ * 					- ...
+ * 			- `paragraph`
+ * 			- ...
+ * 		- `languages`
+ * 			- `language`
+ * 			- `language`
+ * 			- ...
+ * 	- `interlinear-text`
+ * 	- ... 
+ *
+ * The resulting Salt model will look like the following
+ * 
+ * ```
+ * +---------------------------------------------------------------------------------------------+
+ * | SCorpus document                                                                            |
+ * +---------------------------------------------------------------------------------------+-----+
+ * | SDocument interlinear-text                                                            |     |
+ * |     annotations:                                                                      | ... |
+ * |         item "type"_"lang":value                                                      |     |
+ * +---------------------------------------------------------------------------------+-----+-----+
+ * | SSpan phrase "item 'segnum'"                                                    |     |
+ * |     annotations:                                                                | ... |    
+ * |         item "type"_"lang":value                                                |     |
+ * +---------------------------------------------------------------------------+-----+-----+
+ * | SSpan word                                                                |     |
+ * |     annotations:                                                          | ... |
+ * |         item "type"_"lang":value                                          |     |
+ * +----------------------------------+----------------------------------+-----+-----+
+ * | SToken morph                     | SToken morph                     |     |
+ * |     annotations:                 |     annotations:                 | ... |
+ * |         item "type"_"lang":value |         item "type"_"lang":value |     |
+ * +----------------------------------+----------------------------------+-----+-----------------+
+ * | STextualDS "word" (compiled from word > item type="text")                                   |
+ * +---------------------------------------------------------------------------------------------+
+ * | STextualDS "morph" (compiled from word > item type="text")                                  |
+ * +---------------------------------------------------------------------------------------------+
+ * ```
+ *
+ * @author XMLTagExtractor
+ **/
 public interface FLExText {
 
-		/** constant to address the xml-element 'paragraph'. **/
+		/** 
+		 * Constant to address the xml-element `paragraph`.
+		 * 
+		 * `paragraph`s are .
+		 */
 		public static final String TAG_PARAGRAPH= "paragraph";
-		/** constant to address the xml-element 'item'. **/
+		/** 
+		 * Constant to address the xml-element `item`.
+		 * 
+		 * This corresponds to the generic element `item`,
+		 * so items carry their domain info in their `type`
+		 * attribute.
+		 */
 		public static final String TAG_ITEM= "item";
-		/** constant to address the xml-element 'languages'. **/
+		/** 
+		 * Constant to address the xml-element `languages`.
+		 * 
+		 * `languages` is a container for `language`s.
+		 */
 		public static final String TAG_LANGUAGES= "languages";
-		/** constant to address the xml-element 'document'. **/
+		/** 
+		 * Constant to address the xml-element `document`.
+		 * 
+		 * This corresponds to the Salt element `SCorpus`.
+		 * As all FLExText files start with this, the corpus-document
+		 * containment relationships depend on the number of FLExText
+		 * *Text*s exported at any one time.
+		 * 
+		 * Additionally, the {@link FLExImporter} also works on
+		 * directories, in case of which all files contained in
+		 * a directory become a sub-corpus.
+		 */
 		public static final String TAG_DOCUMENT= "document";
-		/** constant to address the xml-element 'words'. **/
+		/** 
+		 * Constant to address the xml-element `words`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String TAG_WORDS= "words";
-		/** constant to address the xml-element 'language'. **/
+		/** 
+		 * Constant to address the xml-element `language`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String TAG_LANGUAGE= "language";
-		/** constant to address the xml-element 'paragraphs'. **/
+		/** 
+		 * Constant to address the xml-element `paragraphs`.
+		 * 
+		 * `paragraphs` is a container for `paragraph`s.
+		 */
 		public static final String TAG_PARAGRAPHS= "paragraphs";
-		/** constant to address the xml-element 'morphemes'. **/
+		/** 
+		 * Constant to address the xml-element `morphemes`.
+		 * 
+		 * `morphemes` is a container for `morph`s.
+		 */
 		public static final String TAG_MORPHEMES= "morphemes";
-		/** constant to address the xml-element 'interlinear-text'. **/
+		/** 
+		 * Constant to address the xml-element `interlinear-text`.
+		 * 
+		 * This corresponds to the Salt element `SDocument`.
+		 * 
+		 * `interlinear-text` can, to current knowledge, have
+		 * the following child elements:
+		 * 
+		 * - `paragraphs`
+		 * - `languages`
+		 * - `item`
+		 */
 		public static final String TAG_INTERLINEAR_TEXT= "interlinear-text";
-		/** constant to address the xml-element 'phrase'. **/
+		/** 
+		 * Constant to address the xml-element `phrase`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String TAG_PHRASE= "phrase";
-		/** constant to address the xml-element 'phrases'. **/
+		/** 
+		 * Constant to address the xml-element `phrases`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String TAG_PHRASES= "phrases";
-		/** constant to address the xml-element 'morph'. **/
+		/** 
+		 * Constant to address the xml-element `morph`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String TAG_MORPH= "morph";
-		/** constant to address the xml-element 'word'. **/
+		/** 
+		 * Constant to address the xml-element `word`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String TAG_WORD= "word";
 
-		/** constant to address the xml-attribute 'vernacular'. **/
+		/** 
+		 * Constant to address the xml-attribute `vernacular`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String ATT_VERNACULAR= "vernacular";
-		/** constant to address the xml-attribute 'guid'. **/
+		/** Constant to address the xml-attribute `guid`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String ATT_GUID= "guid";
-		/** constant to address the xml-attribute 'type'. **/
+		/** Constant to address the xml-attribute `type`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String ATT_TYPE= "type";
-		/** constant to address the xml-attribute 'lang'. **/
+		/** Constant to address the xml-attribute `lang`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String ATT_LANG= "lang";
-		/** constant to address the xml-attribute 'version'. **/
+		/** Constant to address the xml-attribute `version`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String ATT_VERSION= "version";
-		/** constant to address the xml-attribute 'font'. **/
+		/** Constant to address the xml-attribute `font`.
+		 * 
+		 * This corresponds to the Salt element ``.
+		 */
 		public static final String ATT_FONT= "font";
 }
