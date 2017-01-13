@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1484141522242
+Bnd-LastModified: 1484303409080
 Build-Jdk: 1.8.0_111
 Built-By: stephan
 Bundle-Description: Provides shared POM-data.
@@ -14,17 +14,19 @@ Bundle-Version: 1.0.0.SNAPSHOT
 Created-By: Apache Maven Bundle Plugin
 Export-Package: org.corpus_tools.peppermodules.flex;uses:="org.corpus_to
  ols.pepper.common,org.corpus_tools.pepper.impl,org.corpus_tools.pepper.
- modules,org.corpus_tools.pepper.modules.exceptions,org.corpus_tools.sal
- t.common,org.corpus_tools.salt.core,org.corpus_tools.salt.graph,org.ecl
- ipse.emf.common.util";version="1.0.0.SNAPSHOT"
-Import-Package: org.corpus_tools.pepper.common;version="[3.0,4)",org.cor
- pus_tools.pepper.impl;version="[3.0,4)",org.corpus_tools.pepper.modules
- ;version="[3.0,4)",org.corpus_tools.pepper.modules.exceptions;version="
- [3.0,4)",org.corpus_tools.salt;version="[3.0,4)",org.corpus_tools.salt.
- common;version="[3.0,4)",org.corpus_tools.salt.core;version="[3.0,4)",o
- rg.corpus_tools.salt.graph;version="[3.0,4)",org.corpus_tools.salt.util
- ;version="[3.0,4)",org.eclipse.emf.common.util,org.slf4j;version="[1.7,
- 2)"
+ modules,org.corpus_tools.pepper.modules.exceptions,org.corpus_tools.pep
+ permodules.flex.model,org.corpus_tools.salt.common,org.corpus_tools.sal
+ t.graph,org.eclipse.emf.common.util,org.xml.sax,org.xml.sax.ext";versio
+ n="1.0.0.SNAPSHOT",org.corpus_tools.peppermodules.flex.model;version="1
+ .0.0.SNAPSHOT"
+Import-Package: javax.xml.transform,javax.xml.transform.stream,javax.xml
+ .validation,org.corpus_tools.pepper.common;version="[3.0,4)",org.corpus
+ _tools.pepper.impl;version="[3.0,4)",org.corpus_tools.pepper.modules;ve
+ rsion="[3.0,4)",org.corpus_tools.pepper.modules.exceptions;version="[3.
+ 0,4)",org.corpus_tools.salt;version="[3.0,4)",org.corpus_tools.salt.com
+ mon;version="[3.0,4)",org.corpus_tools.salt.core;version="[3.0,4)",org.
+ corpus_tools.salt.graph;version="[3.0,4)",org.eclipse.emf.common.util,o
+ rg.slf4j;version="[1.7,2)",org.xml.sax,org.xml.sax.ext
 META-INF: /home/stephan/src/pepperModules-FLExModules/META-INF
 OSGI-INF: OSGI-INF
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.7))"

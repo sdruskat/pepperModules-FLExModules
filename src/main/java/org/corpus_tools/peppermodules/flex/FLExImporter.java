@@ -1,6 +1,14 @@
 package org.corpus_tools.peppermodules.flex;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 
 import org.corpus_tools.pepper.impl.PepperImporterImpl;
 import org.corpus_tools.pepper.modules.PepperImporter;
@@ -14,6 +22,7 @@ import org.eclipse.emf.common.util.URI;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 // FIXME: Similar to https://github.com/korpling/pepperModules-ModuleBox/blob/05b1b6f4f57292b7a297d72500e834ce01e0ef42/src/main/java/org/corpus_tools/peppermodules/toolboxModules/WolofImporter.java !!!
 
@@ -64,6 +73,19 @@ public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 			SCorpus subCorpus = corpusGraph.createCorpus(parent, corpusFileName.substring(0, corpusFileName.lastIndexOf('.')));
 			getIdentifier2ResourceTable().put(subCorpus.getIdentifier(), corpusFileURI);
 
+			// Validate file against XSD
+			URL xsd = getClass().getClassLoader().getResource("FlexInterlinear.xsd");
+			SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI); 
+			Schema schema = null;
+			try {
+				schema = sf.newSchema(xsd);
+				Validator validator = schema.newValidator();
+				validator.validate(new StreamSource(corpusFile));
+			}
+			catch (SAXException | IOException e) {
+				e.printStackTrace();
+			} 
+			
 			// Read file
 			// Create document in file
 			SDocument doc = corpusGraph.createDocument(subCorpus, corpusFileName.substring(0, corpusFileName.lastIndexOf('.')));
