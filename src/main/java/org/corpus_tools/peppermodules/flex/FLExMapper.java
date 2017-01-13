@@ -6,6 +6,7 @@ package org.corpus_tools.peppermodules.flex;
 import org.corpus_tools.pepper.common.DOCUMENT_STATUS;
 import org.corpus_tools.pepper.impl.PepperMapperImpl;
 import org.corpus_tools.salt.SaltFactory;
+import org.corpus_tools.salt.common.SDocumentGraph;
 import org.eclipse.emf.common.util.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +23,7 @@ public class FLExMapper extends PepperMapperImpl {
 	
 	@Override
 	public DOCUMENT_STATUS mapSCorpus() {
-		// getScorpus() returns the current corpus object.
-		getCorpus().createMetaAnnotation(null, "date", "1989-12-17");
-
+		getCorpus().setName(getResourceURI().lastSegment());
 		return (DOCUMENT_STATUS.COMPLETED);
 	}
 
@@ -34,14 +33,17 @@ public class FLExMapper extends PepperMapperImpl {
 		URI resource = getResourceURI();
 		logger.debug("Importing the file {}.", resource);
 
-		addProgress(0.16);
-		// we set progress to 'done' to notify the user about the process
-		// status (this is very helpful, especially for longer taking
-		// processes)
-		setProgress(1.0);
+		SDocumentGraph graph = getDocument().getDocumentGraph();
+		FLExTextReader reader = null;
+		if (graph != null) {
+			reader = new FLExTextReader(graph);
+			
+		}
+		else {
+			logger.error("SDocumentGraph for " + resource + " is null!");
+		}
+		this.readXMLResource(reader, getResourceURI());
 
-		// now we are done and return the status that everything was
-		// successful
 		return (DOCUMENT_STATUS.COMPLETED);
 	}
 
