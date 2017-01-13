@@ -83,7 +83,7 @@ public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 				validator.validate(new StreamSource(corpusFile));
 			}
 			catch (SAXException | IOException e) {
-				e.printStackTrace();
+				logger.error(corpusFile.getAbsolutePath() + " has not validated successfully against " + xsd.getFile(), e);
 			} 
 			
 			// Read file
