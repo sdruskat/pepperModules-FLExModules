@@ -59,6 +59,6 @@ public class FLExTextReader extends DefaultHandler2 implements FLExText {
 	
 	@Override
 	public void fatalError(SAXParseException e) {
-		logger.error("Caught a fatal error while parsing the XML file!", e);
+		logger.error("Caught a fatal error while parsing the XML file! Most likely, there will be content before the '<?xml>' element, such as text or a UTF-8 BOM.", e);
 	}
 }
