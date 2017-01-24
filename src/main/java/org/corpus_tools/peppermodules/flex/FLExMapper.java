@@ -5,6 +5,7 @@ package org.corpus_tools.peppermodules.flex;
 
 import org.corpus_tools.pepper.common.DOCUMENT_STATUS;
 import org.corpus_tools.pepper.impl.PepperMapperImpl;
+import org.corpus_tools.peppermodules.flex.readers.FLExDocumentReader;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocumentGraph;
 import org.eclipse.emf.common.util.URI;
@@ -18,25 +19,28 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class FLExMapper extends PepperMapperImpl {
+	
+	// FEFF because this is the Unicode char represented by the UTF-8 byte order mark (BOM, EF BB BF).
+    public static final String UTF8_BOM = "\uFEFF";
 
 	private static final Logger logger = LoggerFactory.getLogger(FLExMapper.class);
 	
 	@Override
 	public DOCUMENT_STATUS mapSCorpus() {
 		getCorpus().setName(getResourceURI().lastSegment());
-		return (DOCUMENT_STATUS.COMPLETED);
+		return DOCUMENT_STATUS.COMPLETED;
 	}
 
 	@Override
 	public DOCUMENT_STATUS mapSDocument() {
 		getDocument().setDocumentGraph(SaltFactory.createSDocumentGraph());
 		URI resource = getResourceURI();
-		logger.debug("Importing the file {}.", resource);
-
+		logger.info("Importing the document {}.", getDocument().getName());
+		
 		SDocumentGraph graph = getDocument().getDocumentGraph();
-		FLExTextReader reader = null;
+		FLExDocumentReader reader = null;
 		if (graph != null) {
-			reader = new FLExTextReader(graph);
+			reader = new FLExDocumentReader(graph);
 			
 		}
 		else {
@@ -44,7 +48,7 @@ public class FLExMapper extends PepperMapperImpl {
 		}
 		this.readXMLResource(reader, getResourceURI());
 
-		return (DOCUMENT_STATUS.COMPLETED);
+		return DOCUMENT_STATUS.COMPLETED;
 	}
 
 }

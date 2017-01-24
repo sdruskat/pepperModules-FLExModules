@@ -14,6 +14,7 @@ import org.corpus_tools.pepper.impl.PepperImporterImpl;
 import org.corpus_tools.pepper.modules.PepperImporter;
 import org.corpus_tools.pepper.modules.PepperMapper;
 import org.corpus_tools.pepper.modules.exceptions.PepperModuleException;
+import org.corpus_tools.peppermodules.flex.readers.FLExCorpusStructureReader;
 import org.corpus_tools.salt.common.SCorpus;
 import org.corpus_tools.salt.common.SCorpusGraph;
 import org.corpus_tools.salt.common.SDocument;
@@ -81,15 +82,19 @@ public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 				schema = sf.newSchema(xsd);
 				Validator validator = schema.newValidator();
 				validator.validate(new StreamSource(corpusFile));
+				
+				// Every .flextext file is a *corpus*, not a *document*!
 			}
 			catch (SAXException | IOException e) {
-				logger.error(corpusFile.getAbsolutePath() + " has not validated successfully against " + xsd.getFile(), e);
+				logger.error(corpusFile.getAbsolutePath() + " has not validated successfully against '" + xsd.getFile() + "'! Ignoring file.", e);
+				return;
 			} 
-			
-			// Read file
-			// Create document in file
-			SDocument doc = corpusGraph.createDocument(subCorpus, corpusFileName.substring(0, corpusFileName.lastIndexOf('.')));
-			getIdentifier2ResourceTable().put(doc.getIdentifier(), corpusFileURI);
+			// Parse FLEXText file once to create documents
+			FLExCorpusStructureReader reader = new FLExCorpusStructureReader(subCorpus);
+			this.readXMLResource(reader, corpusFileURI);
+			for (SDocument doc : reader.getDocuments()) {
+				getIdentifier2ResourceTable().put(doc.getIdentifier(), corpusFileURI);
+			}
 		}
 	}
 
