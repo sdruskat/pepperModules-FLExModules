@@ -18,7 +18,6 @@ import org.corpus_tools.peppermodules.flex.readers.FLExCorpusStructureReader;
 import org.corpus_tools.salt.common.SCorpus;
 import org.corpus_tools.salt.common.SCorpusGraph;
 import org.corpus_tools.salt.common.SDocument;
-import org.corpus_tools.salt.core.SMetaAnnotation;
 import org.corpus_tools.salt.graph.Identifier;
 import org.eclipse.emf.common.util.URI;
 import org.osgi.service.component.annotations.Component;
@@ -94,11 +93,6 @@ public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 			FLExCorpusStructureReader reader = new FLExCorpusStructureReader(subCorpus);
 			this.readXMLResource(reader, corpusFileURI);
 			for (SDocument doc : reader.getDocuments()) {
-				System.err.println(doc.getName());
-				for (SMetaAnnotation ma : doc.getMetaAnnotations()) {
-					System.err.println(ma);
-				}
-				System.err.println("#################################\n\n\n");
 				getIdentifier2ResourceTable().put(doc.getIdentifier(), corpusFileURI);
 			}
 		}

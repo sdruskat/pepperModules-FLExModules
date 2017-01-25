@@ -261,4 +261,8 @@ public interface FLExText {
 		public static final String FLEX_ANALYSIS_STATUS_TYPE__GUESS = "guess";
 		public static final String FLEX_ANALYSIS_STATUS_TYPE__GUESS_HUMAN_APPR = "guessByHumanApproved";
 		public static final String FLEX_ANALYSIS_STATUS_TYPE__GUESS_STATISTICAL_ANAL = "guessByStatisticalAnalysis";
+		
+		// Processing constants
+		public static final String PROCESSING__KEY_VALUE_SEPARATOR = "=";
+		public static final String PROCESSING__ANNOTATION_SEPARATOR = ",";
 }

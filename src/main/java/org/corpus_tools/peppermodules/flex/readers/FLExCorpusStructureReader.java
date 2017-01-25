@@ -62,7 +62,7 @@ public class FLExCorpusStructureReader extends DefaultHandler2 implements FLExTe
 			for (int i = 0; i < attributes.getLength(); i++) {
 				String name = attributes.getQName(i);
 				String value = attributes.getValue(i);
-				doc.createMetaAnnotation(FLEX_NAMESPACE, name, value);
+				doc.createMetaAnnotation(TAG_INTERLINEAR_TEXT, name, value);
 			}
 			documentStack.push(doc);
 		}
@@ -80,6 +80,21 @@ public class FLExCorpusStructureReader extends DefaultHandler2 implements FLExTe
 				activeItemAttributes.put(name, value);
 			}
 		}
+		else if (TAG_LANGUAGE.equals(qName)) {
+			SDocument doc = documentStack.peek();
+			String lang = attributes.getValue(FLEX__LANG_ATTR);
+			String encoding = attributes.getValue(FLEX_LANGUAGE__ENCODING_ATTR);
+			String font = attributes.getValue(FLEX_LANGUAGE__FONT_ATTR);
+			String vernacular = attributes.getValue(FLEX_LANGUAGE__VERNACULAR_ATTR);
+			doc.createMetaAnnotation(TAG_LANGUAGES, lang, 
+					FLEX_LANGUAGE__ENCODING_ATTR + PROCESSING__KEY_VALUE_SEPARATOR + encoding + PROCESSING__ANNOTATION_SEPARATOR
+					+ FLEX_LANGUAGE__VERNACULAR_ATTR + PROCESSING__KEY_VALUE_SEPARATOR + vernacular + PROCESSING__ANNOTATION_SEPARATOR
+					+ FLEX_LANGUAGE__FONT_ATTR + PROCESSING__KEY_VALUE_SEPARATOR + font);
+		}
+		// FIXME: Bug #3
+//		else if (TAG_MEDIA_FILES.equal(qName)) {
+//			
+//		}
 	}
 	
 	@Override

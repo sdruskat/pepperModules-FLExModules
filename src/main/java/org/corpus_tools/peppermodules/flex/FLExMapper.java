@@ -9,7 +9,6 @@ import org.corpus_tools.peppermodules.flex.exceptions.DocumentSAXParseFinishedEv
 import org.corpus_tools.peppermodules.flex.readers.FLExDocumentReader;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocumentGraph;
-import org.eclipse.emf.common.util.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,27 +34,31 @@ public class FLExMapper extends PepperMapperImpl {
 	@Override
 	public DOCUMENT_STATUS mapSDocument() {
 		getDocument().setDocumentGraph(SaltFactory.createSDocumentGraph());
-		URI resource = getResourceURI();
-		logger.info("Importing the document '{}'.", getDocument().getName());
 		
 		SDocumentGraph graph = getDocument().getDocumentGraph();
 		FLExDocumentReader reader = null;
+
 		if (graph != null) {
 			reader = new FLExDocumentReader(getDocument());
 		}
 		else {
-			logger.error("SDocumentGraph for " + resource + " is null!");
+			logger.error("SDocumentGraph for " + getResourceURI() + " is null!");
+			return DOCUMENT_STATUS.FAILED;
 		}
+
 		try {
-			
 			this.readXMLResource(reader, getResourceURI());
 		}
 		catch (Exception e) {
 			if (e.getCause() instanceof DocumentSAXParseFinishedEvent) {
 				logger.info(e.getCause().getMessage());
 			}
+			else {
+				logger.error("An error occurred while reading the file '{}'.", getResourceURI().path(), e);
+				return DOCUMENT_STATUS.FAILED;
+			}
 		}
-
+		
 		return DOCUMENT_STATUS.COMPLETED;
 	}
 
