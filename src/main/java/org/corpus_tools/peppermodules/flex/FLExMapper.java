@@ -5,6 +5,7 @@ package org.corpus_tools.peppermodules.flex;
 
 import org.corpus_tools.pepper.common.DOCUMENT_STATUS;
 import org.corpus_tools.pepper.impl.PepperMapperImpl;
+import org.corpus_tools.peppermodules.flex.exceptions.DocumentSAXParseFinishedEvent;
 import org.corpus_tools.peppermodules.flex.readers.FLExDocumentReader;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocumentGraph;
@@ -35,7 +36,7 @@ public class FLExMapper extends PepperMapperImpl {
 	public DOCUMENT_STATUS mapSDocument() {
 		getDocument().setDocumentGraph(SaltFactory.createSDocumentGraph());
 		URI resource = getResourceURI();
-		logger.info("Importing the document {}.", getDocument().getName());
+		logger.info("Importing the document '{}'.", getDocument().getName());
 		
 		SDocumentGraph graph = getDocument().getDocumentGraph();
 		FLExDocumentReader reader = null;
@@ -46,7 +47,15 @@ public class FLExMapper extends PepperMapperImpl {
 		else {
 			logger.error("SDocumentGraph for " + resource + " is null!");
 		}
-		this.readXMLResource(reader, getResourceURI());
+		try {
+			
+			this.readXMLResource(reader, getResourceURI());
+		}
+		catch (Exception e) {
+			if (e.getCause() instanceof DocumentSAXParseFinishedEvent) {
+				logger.info(e.getCause().getMessage());
+			}
+		}
 
 		return DOCUMENT_STATUS.COMPLETED;
 	}

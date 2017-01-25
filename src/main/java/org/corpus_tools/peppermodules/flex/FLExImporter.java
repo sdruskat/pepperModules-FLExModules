@@ -36,6 +36,9 @@ import org.xml.sax.SAXException;
 @Component(name = "FLExImporterComponent", factory = "PepperImporterComponentFactory")
 public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 	
+	public static final String FLEX_NAMESPACE = "FLEx";
+	public static final String FLEX_DOCUMENT_GUID = "guid";
+	
 	private static final Logger logger = LoggerFactory.getLogger(FLExImporter.class);
 
 	public FLExImporter() {

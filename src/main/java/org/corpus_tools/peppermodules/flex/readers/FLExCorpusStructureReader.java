@@ -6,6 +6,7 @@ package org.corpus_tools.peppermodules.flex.readers;
 import java.util.Stack;
 import java.util.Vector;
 
+import org.corpus_tools.peppermodules.flex.FLExImporter;
 import org.corpus_tools.peppermodules.flex.model.FLExText;
 import org.corpus_tools.salt.common.SCorpus;
 import org.corpus_tools.salt.common.SDocument;
@@ -26,9 +27,9 @@ public class FLExCorpusStructureReader extends DefaultHandler2 implements FLExTe
 
 	private static final Logger logger = LoggerFactory.getLogger(FLExDocumentReader.class);
 	private SCorpus corpus;
-	Stack<SDocument> documentStack = new Stack<>();
+	private final Stack<SDocument> documentStack = new Stack<>();
 	boolean isTitle = false;
-	private Vector<SDocument> documents = new Vector<>();
+	private final Vector<SDocument> documents = new Vector<>();
 
 	/**
 	 * @param subCorpus
@@ -43,6 +44,7 @@ public class FLExCorpusStructureReader extends DefaultHandler2 implements FLExTe
 		}
 		else if (TAG_INTERLINEAR_TEXT.equals(qName)) {
 			SDocument doc = corpus.getGraph().createDocument(corpus, "");
+			doc.createMetaAnnotation(FLExImporter.FLEX_NAMESPACE, FLExImporter.FLEX_DOCUMENT_GUID, attributes.getValue(FLExImporter.FLEX_DOCUMENT_GUID));
 			documentStack.push(doc);
 		}
 		else if (TAG_PARAGRAPHS.equals(qName)) {
