@@ -41,8 +41,7 @@ public class FLExMapper extends PepperMapperImpl {
 		SDocumentGraph graph = getDocument().getDocumentGraph();
 		FLExDocumentReader reader = null;
 		if (graph != null) {
-			reader = new FLExDocumentReader(graph);
-			
+			reader = new FLExDocumentReader(getDocument());
 		}
 		else {
 			logger.error("SDocumentGraph for " + resource + " is null!");
