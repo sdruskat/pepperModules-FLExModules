@@ -188,4 +188,77 @@ public interface FLExText {
 		 * This corresponds to the Salt element ``.
 		 */
 		public static final String ATT_FONT= "font";
+		
+		/* *************
+		 * * CONSTANTS *
+		 * *************
+		 */
+		// General
+		public static final String FLEX_NAMESPACE = "FLEx";
+		
+		// General/multiple-use attributes
+		public static final String FLEX__GUID_ATTR = "guid";
+		public static final String FLEX__TYPE_ATTR = "type";
+		public static final String FLEX__LANG_ATTR = "lang";
+		public static final String FLEX__ANALYSIS_STATUS_ATTR = "analysisStatus";
+		
+		// Element attributes
+		public static final String FLEX_DOCUMENT__VERSION_ATTR = "version";
+		public static final String FLEX_DOCUMENT__EXPORT_SOURCE_ATTR = "exportSource";
+		public static final String FLEX_DOCUMENT__EXPORT_TARGET_ATTR = "exportTarget";
+		
+		public static final String FLEX_LANGUAGE__ENCODING_ATTR = "encoding";
+		public static final String FLEX_LANGUAGE__FONT_ATTR = "font";
+		public static final String FLEX_LANGUAGE__VERNACULAR_ATTR = "vernacular";
+
+		public static final String FLEX_MEDIA__LOCATION_ATTR = "location";
+		public static final String FLEX_MEDIA__OFFSET_TYPE_ATTR = "offset-type";
+
+		public static final String FLEX_PHRASE__MEDIA_FILE_ATTR = "media-file";
+		public static final String FLEX_PHRASE__BEGIN_TIME_OFFSET_ATTR = "begin-time-offset";
+		public static final String FLEX_PHRASE__END_TIME_OFFSET_ATTR = "end-time-offset";
+		public static final String FLEX_PHRASE__SPEAKER_ATTR = "speaker";
+		
+		// Item types
+		public static final String FLEX_ITEM_TYPE__TXT = "txt";
+		public static final String FLEX_ITEM_TYPE__CF = "cf";
+		public static final String FLEX_ITEM_TYPE__HN = "hn";
+		public static final String FLEX_ITEM_TYPE__VARIANT_TYPES = "variantTypes";
+		public static final String FLEX_ITEM_TYPE__GLS = "gls";
+		public static final String FLEX_ITEM_TYPE__MSA = "msa";
+		public static final String FLEX_ITEM_TYPE__POS = "pos";
+		public static final String FLEX_ITEM_TYPE__TITLE = "title";
+		public static final String FLEX_ITEM_TYPE__TITLE_ABBR = "title-abbreviation";
+		public static final String FLEX_ITEM_TYPE__SOURCE = "source";
+		public static final String FLEX_ITEM_TYPE__COMMENT = "comment";
+		public static final String FLEX_ITEM_TYPE__TEXT_IS_TRANSL = "text-is-translation";
+		public static final String FLEX_ITEM_TYPE__DESC = "description";
+		public static final String FLEX_ITEM_TYPE__PUNCT = "punct";
+
+		// Morph types
+		public static final String FLEX_MORPH_TYPE__PARTICLE = "particle";
+		public static final String FLEX_MORPH_TYPE__INFIX = "infix";
+		public static final String FLEX_MORPH_TYPE__PREFIX = "prefix";
+		public static final String FLEX_MORPH_TYPE__SIMULFIX = "simulfix";
+		public static final String FLEX_MORPH_TYPE__SUFFIX = "suffix";
+		public static final String FLEX_MORPH_TYPE__SUPRAFIX = "suprafix";
+		public static final String FLEX_MORPH_TYPE__CIRCUMFIX = "circumfix";
+		public static final String FLEX_MORPH_TYPE__CLITIC = "clitic";
+		public static final String FLEX_MORPH_TYPE__ENCLITIC = "enclitic";
+		public static final String FLEX_MORPH_TYPE__PROCLITIC = "proclitic";
+		public static final String FLEX_MORPH_TYPE__BOUND_ROOT = "bound root";
+		public static final String FLEX_MORPH_TYPE__ROOT = "root";
+		public static final String FLEX_MORPH_TYPE__BOUND_STEM = "bound stem";
+		public static final String FLEX_MORPH_TYPE__STEAM = "stem";
+		public static final String FLEX_MORPH_TYPE__INFIXING_INTERFIX = "infixing interfix";
+		public static final String FLEX_MORPH_TYPE__PREFIXING_INTERFIX = "prefixing interfix";
+		public static final String FLEX_MORPH_TYPE__SUFFIXING_INTERFIX = "suffixing interfix";
+		public static final String FLEX_MORPH_TYPE__PHRASE = "phrase";
+		public static final String FLEX_MORPH_TYPE__DISCONT_PHRASE = "discontiguous phrase";
+
+		// Analysis status types
+		public static final String FLEX_ANALYSIS_STATUS_TYPE__HUMAN_APPR = "humanApproved";
+		public static final String FLEX_ANALYSIS_STATUS_TYPE__GUESS = "guess";
+		public static final String FLEX_ANALYSIS_STATUS_TYPE__GUESS_HUMAN_APPR = "guessByHumanApproved";
+		public static final String FLEX_ANALYSIS_STATUS_TYPE__GUESS_STATISTICAL_ANAL = "guessByStatisticalAnalysis";
 }
