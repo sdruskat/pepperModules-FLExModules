@@ -22,7 +22,7 @@ import org.corpus_tools.peppermodules.flex.FLExImporter;
  * 								- `item` 0..*
  * 								- `morphemes` 0..1
  * 									- `morph` 0..*
- * 										- `item` 0..1
+ * 										- `item` 0..*
  * 						- `item` 0..* (Order seems to be important here!)
  * 		- `languages` 0..1
  * 			- `language` 0..*
