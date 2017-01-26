@@ -235,6 +235,9 @@ public interface FLExText {
 		public static final String FLEX_ITEM_TYPE__DESC = "description";
 		public static final String FLEX_ITEM_TYPE__PUNCT = "punct";
 
+		// Phrase types
+		public static final String FLEX_PHRASE_TYPE__SEGNUM = "segnum";
+		
 		// Morph types
 		public static final String FLEX_MORPH_TYPE__PARTICLE = "particle";
 		public static final String FLEX_MORPH_TYPE__INFIX = "infix";
@@ -265,4 +268,5 @@ public interface FLExText {
 		// Processing constants
 		public static final String PROCESSING__KEY_VALUE_SEPARATOR = "=";
 		public static final String PROCESSING__ANNOTATION_SEPARATOR = ",";
+		public static final String PROCESSING__ACTIVE_ELEMENT_VALUE = "activeElementValue";
 }
