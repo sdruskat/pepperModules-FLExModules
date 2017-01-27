@@ -20,7 +20,7 @@ This in turn means that if a file contains, e.g., 10 `interlinear-text` elements
 4. Subsequently, for *fourth* document, parse the whole file until the *fourth* `interlinear-text` element, parse the element, then abort (i.e., needs to parse ca. 40% of the file).
 5. etc.
 
-![](./doc/images/parseplot.png)
+![](doc/images/parseplot.png)
 
 You can clearly see the problem here: 
 In our case, the parser will end up parsing the file *5.5 times* (`10% + 20% + 30% + ... + 100% = 550%`) in order to extract the information for all 10 `interlinear-text` elements. 
