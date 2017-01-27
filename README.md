@@ -1,4 +1,4 @@
-#FLExText Modules for the Pepper conversion framework for linguistic data
+# FLExText Modules for the Pepper conversion framework for linguistic data
 
 ## Best practices
 
