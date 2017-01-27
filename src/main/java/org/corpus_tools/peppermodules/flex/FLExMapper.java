@@ -27,18 +27,20 @@ public class FLExMapper extends PepperMapperImpl {
 	
 	@Override
 	public DOCUMENT_STATUS mapSCorpus() {
+		System.err.println("-------------------- MAPPING CORPUS ---------------------");
 		getCorpus().setName(getResourceURI().lastSegment());
 		return DOCUMENT_STATUS.COMPLETED;
 	}
 
 	@Override
 	public DOCUMENT_STATUS mapSDocument() {
-		getDocument().setDocumentGraph(SaltFactory.createSDocumentGraph());
-		
-		SDocumentGraph graph = getDocument().getDocumentGraph();
+		System.err.println("------------ MAPPING DOCUMENT --------------------");
+//		getDocument().setDocumentGraph(SaltFactory.createSDocumentGraph());
+		SDocumentGraph graph = getDocument().getDocumentGraph() == null ? SaltFactory.createSDocumentGraph() : getDocument().getDocumentGraph();
+		getDocument().setDocumentGraph(graph);
 		FLExDocumentReader reader = null;
 
-		if (graph != null) {
+		if (getDocument().getDocumentGraph() != null) {
 			reader = new FLExDocumentReader(getDocument());
 		}
 		else {
