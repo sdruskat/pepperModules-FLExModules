@@ -26,6 +26,8 @@ You can clearly see the problem here:
 In our case, the parser will end up parsing the file *5.5 times* (`10% + 20% + 30% + ... + 100% = 550%`) in order to extract the information for all 10 `interlinear-text` elements. 
 This will result in suboptimal performance, especially because the module allows for multithreaded mapping of files!
 
+(Following are approximations for the sake of presentation, not precise data. But this is not a place to discuss processor performance or the details of XML parsing!)
+
 With *one* document per file, every file will need to be parsed only *once*, which results in a considerable reduction of parsing overhead! 
 Imagine parsing four files with one document per file.
 On a quad-core computer, all four files can be processed simultaneously, with one parse run per file. 
