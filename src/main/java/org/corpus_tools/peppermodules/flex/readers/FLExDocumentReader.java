@@ -150,6 +150,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 		if (isCorrectDocument) {
 			// Stop parsing if the end of the document is hit
 			if (TAG_INTERLINEAR_TEXT.equals(qName)) {
+				System.err.println("X");
 				isCorrectDocument = false;
 			}
 //			else if (TAG_PHRASE.equals(qName)) {

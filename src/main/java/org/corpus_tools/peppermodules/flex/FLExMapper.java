@@ -60,7 +60,6 @@ public class FLExMapper extends PepperMapperImpl {
 				return DOCUMENT_STATUS.FAILED;
 			}
 		}
-		
 		return DOCUMENT_STATUS.COMPLETED;
 	}
 
