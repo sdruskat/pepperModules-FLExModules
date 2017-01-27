@@ -9,6 +9,8 @@ import org.corpus_tools.peppermodules.flex.exceptions.DocumentSAXParseFinishedEv
 import org.corpus_tools.peppermodules.flex.readers.FLExDocumentReader;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocumentGraph;
+import org.corpus_tools.salt.common.STextualDS;
+import org.corpus_tools.salt.core.SLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,27 +29,27 @@ public class FLExMapper extends PepperMapperImpl {
 	
 	@Override
 	public DOCUMENT_STATUS mapSCorpus() {
-		System.err.println("-------------------- MAPPING CORPUS ---------------------");
 		getCorpus().setName(getResourceURI().lastSegment());
 		return DOCUMENT_STATUS.COMPLETED;
 	}
 
 	@Override
 	public DOCUMENT_STATUS mapSDocument() {
-		System.err.println("------------ MAPPING DOCUMENT --------------------");
-//		getDocument().setDocumentGraph(SaltFactory.createSDocumentGraph());
 		SDocumentGraph graph = getDocument().getDocumentGraph() == null ? SaltFactory.createSDocumentGraph() : getDocument().getDocumentGraph();
+		// Graph set up
+		graph.createTimeline();
+		graph.addLayer(getLayer("words"));
+		graph.addLayer(getLayer("morphemes"));
+		STextualDS morphemes = graph.createTextualDS("");
+		morphemes.setName("morphemes");
+		STextualDS words = graph.createTextualDS("");
+		words.setName("words");
+		
+		// Set graph on document
 		getDocument().setDocumentGraph(graph);
-		FLExDocumentReader reader = null;
 
-		if (getDocument().getDocumentGraph() != null) {
-			reader = new FLExDocumentReader(getDocument());
-		}
-		else {
-			logger.error("SDocumentGraph for " + getResourceURI() + " is null!");
-			return DOCUMENT_STATUS.FAILED;
-		}
-
+		// Read document
+		FLExDocumentReader reader = new FLExDocumentReader(getDocument());
 		try {
 			this.readXMLResource(reader, getResourceURI());
 		}
@@ -61,6 +63,18 @@ public class FLExMapper extends PepperMapperImpl {
 			}
 		}
 		return DOCUMENT_STATUS.COMPLETED;
+	}
+
+	/**
+	 * TODO: Description
+	 *
+	 * @param string
+	 * @return
+	 */
+	private SLayer getLayer(String name) {
+		SLayer layer = SaltFactory.createSLayer();
+		layer.setName(name);
+		return layer;
 	}
 
 }

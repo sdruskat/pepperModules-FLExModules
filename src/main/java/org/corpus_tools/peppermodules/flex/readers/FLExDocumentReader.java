@@ -12,6 +12,8 @@ import org.corpus_tools.salt.common.SDocument;
 import org.corpus_tools.salt.common.SDocumentGraph;
 import org.corpus_tools.salt.common.STextualDS;
 import org.corpus_tools.salt.common.STextualRelation;
+import org.corpus_tools.salt.common.STimeline;
+import org.corpus_tools.salt.common.STimelineRelation;
 import org.corpus_tools.salt.common.SToken;
 import org.corpus_tools.salt.core.SMetaAnnotation;
 import org.corpus_tools.salt.util.SaltUtil;
@@ -47,10 +49,15 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 	
 
 	private Vector<SToken> morphemes = new Vector<>();
+	private Vector<SToken> words = new Vector<>();
+	private int wordLength = 0;
 	
-	private Table<String, String, String> items = HashBasedTable.create();
+	private Table<String, String, String> morphItems = HashBasedTable.create();
+	private Table<String, String, String> wordItems = HashBasedTable.create();
 
 	private Map<String, String> activeAttributes = new HashMap<>();
+
+	private int wordTimelineStart;
 
 	/**
 	 * @param graph
@@ -82,15 +89,11 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 		if (isCorrectDocument) {
 			if (TAG_PHRASE.equals(qName)) {
 				itemParent = Element.PHRASE;
-				items.clear();
+				morphItems.clear();
 			}
 			if (TAG_WORD.equals(qName)) {
 				itemParent = Element.WORD;
-				items.clear();
-			}
-			if (TAG_MORPH.equals(qName)) {
-				itemParent = Element.MORPH;
-				items.clear();
+				wordItems.clear();
 				SToken token = SaltFactory.createSToken();
 				for (int i = 0; i < attributes.getLength(); i++) {
 					if (attributes.getQName(i).equals(FLEX__TYPE_ATTR)) {
@@ -100,16 +103,52 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 						token.createMetaAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
 					}
 				}
-				graph.addNode(token);
+				words.add(token);
+			}
+			if (TAG_MORPHEMES.equals(qName)) {
+				wordTimelineStart = graph.getTimeline().getEnd() == null ? 0 : graph.getTimeline().getEnd();
+			}
+			if (TAG_MORPH.equals(qName)) {
+				itemParent = Element.MORPH;
+				morphItems.clear();
+				SToken token = SaltFactory.createSToken();
+				for (int i = 0; i < attributes.getLength(); i++) {
+					if (attributes.getQName(i).equals(FLEX__TYPE_ATTR)) {
+						token.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
+					}
+					else {
+						token.createMetaAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
+					}
+				}
 				morphemes.add(token);
 			}
 			else if (TAG_ITEM.equals(qName)) {
 				isItemActiveElement = true;
-				int row = items.rowKeySet().size();
-				items.put(String.valueOf(row), FLEX__LANG_ATTR, attributes.getValue(FLEX__LANG_ATTR));
-				items.put(String.valueOf(row), FLEX__TYPE_ATTR, attributes.getValue(FLEX__TYPE_ATTR));
-				if (attributes.getType(FLEX__ANALYSIS_STATUS_ATTR) != null) {
-					items.put(String.valueOf(row), FLEX__ANALYSIS_STATUS_ATTR, attributes.getValue(FLEX__ANALYSIS_STATUS_ATTR));
+//				Table<String, String, String> items = null;
+				int row;
+				if (itemParent != null) {
+					switch (itemParent) {
+					case MORPH:
+						row = morphItems.rowKeySet().size();
+						morphItems.put(String.valueOf(row), FLEX__LANG_ATTR, attributes.getValue(FLEX__LANG_ATTR));
+						morphItems.put(String.valueOf(row), FLEX__TYPE_ATTR, attributes.getValue(FLEX__TYPE_ATTR));
+						if (attributes.getType(FLEX__ANALYSIS_STATUS_ATTR) != null) {
+							morphItems.put(String.valueOf(row), FLEX__ANALYSIS_STATUS_ATTR, attributes.getValue(FLEX__ANALYSIS_STATUS_ATTR));
+						}
+						break;
+
+					case WORD:
+						row = wordItems.rowKeySet().size();
+						wordItems.put(String.valueOf(row), FLEX__LANG_ATTR, attributes.getValue(FLEX__LANG_ATTR));
+						wordItems.put(String.valueOf(row), FLEX__TYPE_ATTR, attributes.getValue(FLEX__TYPE_ATTR));
+						if (attributes.getType(FLEX__ANALYSIS_STATUS_ATTR) != null) {
+							wordItems.put(String.valueOf(row), FLEX__ANALYSIS_STATUS_ATTR, attributes.getValue(FLEX__ANALYSIS_STATUS_ATTR));
+						}
+						break;
+
+					default:
+						break;
+					}
 				}
 			}
 		}
@@ -117,21 +156,16 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 	
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
-//		System.err.println("CHAR CALLED");
-//		if (activeElement != null && activeElement.equals(TAG_MORPH) && isItem ) {
-//			String row = Integer.toString(activeItems.rowKeySet().size() - 1);
-//			activeItems.put(row, PROCESSING__ACTIVE_ELEMENT_VALUE, new String(ch, start, length));
-//		}
 		if (isItemActiveElement) {
 			if (itemParent != null) {
 				switch (itemParent) {
 				case MORPH:
-					items.put(String.valueOf(items.rowKeySet().size() - 1), PROCESSING__ACTIVE_ELEMENT_VALUE, new String(ch, start, length));
+					morphItems.put(String.valueOf(morphItems.rowKeySet().size() - 1), PROCESSING__ACTIVE_ELEMENT_VALUE, new String(ch, start, length));
 					return;
 
 				case WORD:
-
-					break;
+					wordItems.put(String.valueOf(wordItems.rowKeySet().size() - 1), PROCESSING__ACTIVE_ELEMENT_VALUE, new String(ch, start, length));
+					return;
 
 				case PHRASE:
 
@@ -150,25 +184,25 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 		if (isCorrectDocument) {
 			// Stop parsing if the end of the document is hit
 			if (TAG_INTERLINEAR_TEXT.equals(qName)) {
-				System.err.println("X");
 				isCorrectDocument = false;
 			}
 //			else if (TAG_PHRASE.equals(qName)) {
 //				items.clear();
 //			}
-//			else if (TAG_WORD.equals(qName)) {
-//				items.clear();
-//			}
-			else if (TAG_MORPH.equals(qName)) {
-				STextualDS ds = graph.getTextualDSs().size() == 0 ? graph.createTextualDS("") : graph.getTextualDSs().get(0);
-				Iterator<Map<String, String>> rowIterator = items.rowMap().values().iterator();
+			else if (TAG_WORD.equals(qName)) {
+				STimeline timeline = graph.getTimeline();
+				
+				STextualDS ds = graph.getTextualDSs().size() == 1 ? graph.createTextualDS("") : graph.getTextualDSs().get(1);
+				Iterator<Map<String, String>> rowIterator = wordItems.rowMap().values().iterator();
+				SToken token = words.lastElement();
 				String tokenText = null;
-				txtLoop:
 				while (rowIterator.hasNext()) {
 					Map<String, String> row = rowIterator.next();
 					if (row.get(FLEX__TYPE_ATTR).equals(FLEX_ITEM_TYPE__TXT)) {
 						tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
-						break txtLoop;
+					}
+					else {
+						token.createAnnotation(row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 					}
 				}
 				String oldText = ds.getText();
@@ -176,60 +210,61 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				ds.setText(oldText += tokenText);
 
 				STextualRelation textRel = SaltFactory.createSTextualRelation();
-				textRel.setSource(morphemes.lastElement());
+				textRel.setSource(token);
 				textRel.setTarget(ds);
 				textRel.setStart(oldTextLength);
 				textRel.setEnd(ds.getText().length());
-				
+				graph.addNode(token);
 				graph.addRelation(textRel);
-//				String text = ds.getText();
 				
+				STimelineRelation timeLineRel = SaltFactory.createSTimelineRelation();
+				timeLineRel.setSource(token);
+				timeLineRel.setTarget(timeline);
+				timeLineRel.setStart(wordTimelineStart);
+				timeLineRel.setEnd(wordTimelineStart + wordLength);
+				graph.addRelation(timeLineRel);
+				graph.getLayerByName("words").get(0).addNode(token);
+			}
+			else if (TAG_MORPH.equals(qName)) {
+				STimeline timeline = graph.getTimeline();
+				int timelineEnd = timeline.getEnd() == null ? 0 : timeline.getEnd();
+
+				STextualDS ds = graph.getTextualDSs().size() == 0 ? graph.createTextualDS("") : graph.getTextualDSs().get(0);
+				Iterator<Map<String, String>> rowIterator = morphItems.rowMap().values().iterator();
+				SToken token = morphemes.lastElement();
+				String tokenText = null;
+				while (rowIterator.hasNext()) {
+					Map<String, String> row = rowIterator.next();
+					if (row.get(FLEX__TYPE_ATTR).equals(FLEX_ITEM_TYPE__TXT)) {
+						tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
+					}
+					else {
+						token.createAnnotation(row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+					}
+				}
+				System.err.println(token.getAnnotations());
+				String oldText = ds.getText();
+				int oldTextLength = oldText.length();
+				ds.setText(oldText += tokenText);
+
+				STextualRelation textRel = SaltFactory.createSTextualRelation();
+				textRel.setSource(token);
+				textRel.setTarget(ds);
+				textRel.setStart(oldTextLength);
+				textRel.setEnd(ds.getText().length());
+				graph.addNode(token);
+				graph.addRelation(textRel);
 				
-				
-				
-				
-//				System.err.println("ITEMS FOR THIS MORPH: ");
-//				for (int i = 0; i < items.rowKeySet().size(); i++) {
-//					Map<String, String> row = items.row(String.valueOf(i));
-//					System.err.println("lang: " + row.get(FLEX__LANG_ATTR) + ", type: " + row.get(FLEX__TYPE_ATTR) + ", stat: " + row.get(FLEX__ANALYSIS_STATUS_ATTR));
-//				}
-//				System.err.println("---\n\n");
-				
-				
-//				items.clear();
-//				System.err.println("END MORPH");
-//				String tokenText = null;
-////				for (int i = 0; i < activeItems.rowKeySet().size(); i++) {
-////					Map<String, String> items = activeItems.row(Integer.toString(i));
-////					System.err.println("lang: " + items.get(FLEX__LANG_ATTR));
-////					System.err.println("type: " + items.get(FLEX__TYPE_ATTR));
-////					System.err.println("stat: " + items.get(FLEX__ANALYSIS_STATUS_ATTR));
-////					System.err.println("VALUE: " + items.get(PROCESSING__ACTIVE_ELEMENT_VALUE) + "\n");
-////				}
-////				System.err.println("------------------\n\n\n");
-//				STextualDS ds = graph.getTextualDSs().size() == 0 ? graph.createTextualDS("") : graph.getTextualDSs().get(0);
-//				Iterator<Map<String, String>> rowIterator = activeItems.rowMap().values().iterator();
-//				txtLoop:
-//				while (rowIterator.hasNext()) {
-//					Map<String, String> row = rowIterator.next();
-//					System.err.println(row);
-//					if (row.get(FLEX__TYPE_ATTR).equals(FLEX_ITEM_TYPE__TXT)) {
-//						tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
-//						break txtLoop;
-//					}
-//				}
-//				System.err.println(">>> " + tokenText);
-//				if (tokenText == null) {
-//					// TODO Add location, file name, etc.
-//					logger.warn("Encountered an empty morpheme: Ignoring it.");
-//					return;
-//				}
-//				String oldText = ds.getText();
-//				ds.setText(oldText += tokenText);
-//				String text = ds.getText();
-//				graph.createToken(ds, text.length() - tokenText.length(), text.length());
-//
-//				reset();
+				int timeSteps = tokenText.length();
+				wordLength += timeSteps;
+				timeline.increasePointOfTime(timeSteps);
+				STimelineRelation timeLineRel = SaltFactory.createSTimelineRelation();
+				timeLineRel.setSource(token);
+				timeLineRel.setTarget(timeline);
+				timeLineRel.setStart(timelineEnd);
+				timeLineRel.setEnd(timelineEnd += timeSteps);
+				graph.addRelation(timeLineRel);
+				graph.getLayerByName("morphemes").get(0).addNode(token);
 			}
 			else if (TAG_ITEM.equals(qName)) {
 				isItemActiveElement = false;
