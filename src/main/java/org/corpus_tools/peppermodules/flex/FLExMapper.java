@@ -38,6 +38,8 @@ public class FLExMapper extends PepperMapperImpl {
 		SDocumentGraph graph = getDocument().getDocumentGraph() == null ? SaltFactory.createSDocumentGraph() : getDocument().getDocumentGraph();
 		// Graph set up
 		graph.createTimeline();
+		graph.addLayer(getLayer("paragraphs"));
+		graph.addLayer(getLayer("phrases"));
 		graph.addLayer(getLayer("words"));
 		graph.addLayer(getLayer("morphemes"));
 		STextualDS morphemes = graph.createTextualDS("");

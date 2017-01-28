@@ -10,6 +10,8 @@ import org.corpus_tools.peppermodules.flex.model.FLExText;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocument;
 import org.corpus_tools.salt.common.SDocumentGraph;
+import org.corpus_tools.salt.common.SSpan;
+import org.corpus_tools.salt.common.SSpanningRelation;
 import org.corpus_tools.salt.common.STextualDS;
 import org.corpus_tools.salt.common.STextualRelation;
 import org.corpus_tools.salt.common.STimeline;
@@ -50,11 +52,16 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 
 	private Vector<SToken> morphemes = new Vector<>();
 	private Vector<SToken> words = new Vector<>();
+	private Vector<SSpan> phrases = new Vector<>();
+	private SSpan paragraph = null;
 	private int wordLength = 0;
 	
-	private Table<String, String, String> morphItems = HashBasedTable.create();
-	private Table<String, String, String> wordItems = HashBasedTable.create();
-
+	private int paragraphCount = 0;
+	
+	private final Table<String, String, String> morphItems = HashBasedTable.create();
+	private final Table<String, String, String> wordItems = HashBasedTable.create();
+	private final Table<String, String, String> phraseItems = HashBasedTable.create();
+	
 	private Map<String, String> activeAttributes = new HashMap<>();
 
 	private int wordTimelineStart;
@@ -87,11 +94,31 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 			}
 		}
 		if (isCorrectDocument) {
-			if (TAG_PHRASE.equals(qName)) {
-				itemParent = Element.PHRASE;
-				morphItems.clear();
+			if (TAG_PARAGRAPH.equals(qName)) {
+				itemParent = Element.PARAGRAPH;
+				phrases.clear();
+				SSpan span = SaltFactory.createSSpan();
+				for (int i = 0; i < attributes.getLength(); i++) {
+					span.createMetaAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
+				}
+				paragraph = span;
 			}
-			if (TAG_WORD.equals(qName)) {
+			else if (TAG_PHRASE.equals(qName)) {
+				itemParent = Element.PHRASE;
+				words.clear();
+				phraseItems.clear();
+				SSpan span = SaltFactory.createSSpan();
+				for (int i = 0; i < attributes.getLength(); i++) {
+//					if (attributes.getQName(i).equals(FLEX__GUID_ATTR)) {
+						span.createMetaAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
+//					}
+//					else {
+//						span.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
+//					}
+				}
+				phrases.add(span);
+			}
+			else if (TAG_WORD.equals(qName)) {
 				itemParent = Element.WORD;
 				wordItems.clear();
 				SToken token = SaltFactory.createSToken();
@@ -105,10 +132,10 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				}
 				words.add(token);
 			}
-			if (TAG_MORPHEMES.equals(qName)) {
+			else if (TAG_MORPHEMES.equals(qName)) {
 				wordTimelineStart = graph.getTimeline().getEnd() == null ? 0 : graph.getTimeline().getEnd();
 			}
-			if (TAG_MORPH.equals(qName)) {
+			else if (TAG_MORPH.equals(qName)) {
 				itemParent = Element.MORPH;
 				morphItems.clear();
 				SToken token = SaltFactory.createSToken();
@@ -145,6 +172,15 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 							wordItems.put(String.valueOf(row), FLEX__ANALYSIS_STATUS_ATTR, attributes.getValue(FLEX__ANALYSIS_STATUS_ATTR));
 						}
 						break;
+						
+					case PHRASE:
+						row = phraseItems.rowKeySet().size();
+						phraseItems.put(String.valueOf(row), FLEX__LANG_ATTR, attributes.getValue(FLEX__LANG_ATTR));
+						phraseItems.put(String.valueOf(row), FLEX__TYPE_ATTR, attributes.getValue(FLEX__TYPE_ATTR));
+						if (attributes.getType(FLEX__ANALYSIS_STATUS_ATTR) != null) {
+							phraseItems.put(String.valueOf(row), FLEX__ANALYSIS_STATUS_ATTR, attributes.getValue(FLEX__ANALYSIS_STATUS_ATTR));
+						}
+						break;
 
 					default:
 						break;
@@ -168,7 +204,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 					return;
 
 				case PHRASE:
-
+					phraseItems.put(String.valueOf(phraseItems.rowKeySet().size() - 1), PROCESSING__ACTIVE_ELEMENT_VALUE, new String(ch, start, length));
 					break;
 
 				default:
@@ -186,9 +222,38 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 			if (TAG_INTERLINEAR_TEXT.equals(qName)) {
 				isCorrectDocument = false;
 			}
-//			else if (TAG_PHRASE.equals(qName)) {
-//				items.clear();
-//			}
+			else if (TAG_PARAGRAPH.equals(qName)) {
+				SSpan span = paragraph;
+				span.createMetaAnnotation(FLEX_NAMESPACE, "seqnum", ++paragraphCount);
+				graph.addNode(span);
+				for (SSpan phrase : phrases) {
+					for (SToken token : graph.getOverlappedTokens(phrase)) {
+						SSpanningRelation spanRel = SaltFactory.createSSpanningRelation();
+						spanRel.setSource(span);
+						spanRel.setTarget(token);
+						graph.addRelation(spanRel);
+					}
+				}
+				graph.getLayerByName("paragraphs").get(0).addNode(span);
+			}
+			else if (TAG_PHRASE.equals(qName)) {
+				SSpan span = phrases.lastElement();
+				Iterator<Map<String, String>> rowIterator = phraseItems.rowMap().values().iterator();
+				graph.addNode(span);
+				while (rowIterator.hasNext()) {
+					Map<String, String> row = rowIterator.next();
+					span.createAnnotation(row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+				}
+				
+				for (SToken word : words) {
+					SSpanningRelation spanRel = SaltFactory.createSSpanningRelation();
+					spanRel.setSource(span);
+					spanRel.setTarget(word);
+					graph.addRelation(spanRel);
+				}
+				graph.getLayerByName("phrases").get(0).addNode(span);
+
+			}
 			else if (TAG_WORD.equals(qName)) {
 				STimeline timeline = graph.getTimeline();
 				
