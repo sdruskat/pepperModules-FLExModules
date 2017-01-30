@@ -303,6 +303,15 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 						token.createAnnotation("morpheme_" + row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 					}
 				}
+				// Empty element content *can* occur
+				if (tokenText == null || tokenText.length() == 0) {
+					/* 
+					 * FIXME Once ANNISExporter has been fixed to allow the string
+					 * "NULL" on import (i.e., escapes "NULL" in the database),
+					 * change this to tokenText = "NULL"
+					 */
+					tokenText = "NULL";
+				}
 				String oldText = ds.getText();
 				int oldTextLength = oldText.length();
 				ds.setText(oldText += tokenText);

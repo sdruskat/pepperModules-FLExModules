@@ -92,7 +92,6 @@ public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 			// Parse FLEXText file once to create documents
 			FLExCorpusStructureReader reader = new FLExCorpusStructureReader(subCorpus);
 			this.readXMLResource(reader, corpusFileURI);
-			System.err.println("NO OF DOCS " + reader.getDocuments().size());
 			for (SDocument doc : reader.getDocuments()) {
 				getIdentifier2ResourceTable().put(doc.getIdentifier(), corpusFileURI);
 			}
