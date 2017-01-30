@@ -99,7 +99,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				phrases.clear();
 				SSpan span = SaltFactory.createSSpan();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					span.createMetaAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
+					span.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
 				}
 				paragraph = span;
 			}
@@ -110,7 +110,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				SSpan span = SaltFactory.createSSpan();
 				for (int i = 0; i < attributes.getLength(); i++) {
 //					if (attributes.getQName(i).equals(FLEX__GUID_ATTR)) {
-						span.createMetaAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
+						span.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
 //					}
 //					else {
 //						span.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
@@ -123,12 +123,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				wordItems.clear();
 				SToken token = SaltFactory.createSToken();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					if (attributes.getQName(i).equals(FLEX__TYPE_ATTR)) {
-						token.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
-					}
-					else {
-						token.createMetaAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
-					}
+					token.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
 				}
 				words.add(token);
 			}
@@ -140,12 +135,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				morphItems.clear();
 				SToken token = SaltFactory.createSToken();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					if (attributes.getQName(i).equals(FLEX__TYPE_ATTR)) {
-						token.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
-					}
-					else {
-						token.createMetaAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
-					}
+					token.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
 				}
 				morphemes.add(token);
 			}
@@ -224,7 +214,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 			}
 			else if (TAG_PARAGRAPH.equals(qName)) {
 				SSpan span = paragraph;
-				span.createMetaAnnotation(FLEX_NAMESPACE, "seqnum", ++paragraphCount);
+				span.createAnnotation(FLEX_NAMESPACE, "seqnum", ++paragraphCount);
 				graph.addNode(span);
 				for (SSpan phrase : phrases) {
 					for (SToken token : graph.getOverlappedTokens(phrase)) {
