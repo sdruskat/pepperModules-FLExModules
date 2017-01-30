@@ -109,17 +109,13 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				phraseItems.clear();
 				SSpan span = SaltFactory.createSSpan();
 				for (int i = 0; i < attributes.getLength(); i++) {
-//					if (attributes.getQName(i).equals(FLEX__GUID_ATTR)) {
-						span.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
-//					}
-//					else {
-//						span.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
-//					}
+					span.createAnnotation(FLEX_NAMESPACE, attributes.getQName(i), attributes.getValue(i));
 				}
 				phrases.add(span);
 			}
 			else if (TAG_WORD.equals(qName)) {
 				itemParent = Element.WORD;
+				wordLength = 0;
 				wordItems.clear();
 				SToken token = SaltFactory.createSToken();
 				for (int i = 0; i < attributes.getLength(); i++) {
@@ -128,7 +124,8 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				words.add(token);
 			}
 			else if (TAG_MORPHEMES.equals(qName)) {
-				wordTimelineStart = graph.getTimeline().getEnd() == null ? 0 : graph.getTimeline().getEnd();
+				Integer timelineEnd = graph.getTimeline().getEnd();
+				wordTimelineStart = timelineEnd == null ? 0 : timelineEnd;
 			}
 			else if (TAG_MORPH.equals(qName)) {
 				itemParent = Element.MORPH;
@@ -141,7 +138,6 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 			}
 			else if (TAG_ITEM.equals(qName)) {
 				isItemActiveElement = true;
-//				Table<String, String, String> items = null;
 				int row;
 				if (itemParent != null) {
 					switch (itemParent) {
@@ -253,7 +249,8 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				String tokenText = null;
 				while (rowIterator.hasNext()) {
 					Map<String, String> row = rowIterator.next();
-					if (row.get(FLEX__TYPE_ATTR).equals(FLEX_ITEM_TYPE__TXT)) {
+					String type = row.get(FLEX__TYPE_ATTR);
+					if (type.equals(FLEX_ITEM_TYPE__TXT) || type.equals(FLEX_ITEM_TYPE__PUNCT)) {
 						tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 					}
 					else {
@@ -276,6 +273,10 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				timeLineRel.setSource(token);
 				timeLineRel.setTarget(timeline);
 				timeLineRel.setStart(wordTimelineStart);
+				// Word does not contain morphemes, e.g. in case of punctuation
+				if (wordLength == 0) {
+					wordLength = tokenText.length();
+				}
 				timeLineRel.setEnd(wordTimelineStart + wordLength);
 				graph.addRelation(timeLineRel);
 				graph.getLayerByName("words").get(0).addNode(token);
@@ -297,7 +298,6 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 						token.createAnnotation(row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 					}
 				}
-				System.err.println(token.getAnnotations());
 				String oldText = ds.getText();
 				int oldTextLength = oldText.length();
 				ds.setText(oldText += tokenText);
