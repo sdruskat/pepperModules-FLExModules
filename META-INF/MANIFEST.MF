@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1489400906204
+Bnd-LastModified: 1489405337288
 Build-Jdk: 1.8.0_121
 Built-By: stephan
 Bundle-Description: Provides shared POM-data.
@@ -19,8 +19,9 @@ Export-Package: org.corpus_tools.peppermodules.flex;uses:="org.corpus_to
  on="1.0.0.SNAPSHOT",org.corpus_tools.peppermodules.flex.model;version="
  1.0.0.SNAPSHOT",org.corpus_tools.peppermodules.flex.readers;uses:="org.
  corpus_tools.peppermodules.flex.model,org.corpus_tools.salt.common,org.
- xml.sax,org.xml.sax.ext";version="1.0.0.SNAPSHOT",org.corpus_tools.pepp
- ermodules.flex.exceptions;uses:="org.xml.sax";version="1.0.0.SNAPSHOT"
+ corpus_tools.salt.core,org.xml.sax,org.xml.sax.ext";version="1.0.0.SNAP
+ SHOT",org.corpus_tools.peppermodules.flex.exceptions;uses:="org.xml.sax
+ ";version="1.0.0.SNAPSHOT"
 Import-Package: com.google.common.collect;version="[19.0,20)",javax.xml.
  transform,javax.xml.transform.stream,javax.xml.validation,org.corpus_to
  ols.pepper.common;version="[3.1,4)",org.corpus_tools.pepper.impl;versio
