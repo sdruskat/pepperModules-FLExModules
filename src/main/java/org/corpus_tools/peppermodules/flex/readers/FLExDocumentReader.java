@@ -96,7 +96,12 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				phrases.clear();
 				SSpan span = SaltFactory.createSSpan();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					createAnnotation(span, "paragraph", attributes.getQName(i), attributes.getValue(i));
+					/* 
+					 * Use Salt API here as annotation is expected to be unique 
+					 * and FLExReader API needs a node ID 
+					 * (which is null at this point).
+					 */
+					span.createAnnotation("paragraph", attributes.getQName(i), attributes.getValue(i));
 				}
 				paragraph = span;
 			}
@@ -106,7 +111,12 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				phraseItems.clear();
 				SSpan span = SaltFactory.createSSpan();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					createAnnotation(span, "phrase", attributes.getQName(i), attributes.getValue(i));
+					/* 
+					 * Use Salt API here as annotation is expected to be unique 
+					 * and FLExReader API needs a node ID 
+					 * (which is null at this point).
+					 */
+					span.createAnnotation("phrase", attributes.getQName(i), attributes.getValue(i));
 				}
 				phrases.add(span);
 			}
@@ -119,7 +129,12 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				wordTimelineStart = timelineEnd == null ? 0 : timelineEnd;
 				SToken token = SaltFactory.createSToken();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					createAnnotation(token, "word", attributes.getQName(i), attributes.getValue(i));
+					/* 
+					 * Use Salt API here as annotation is expected to be unique 
+					 * and FLExReader API needs a node ID 
+					 * (which is null at this point).
+					 */
+					token.createAnnotation("word", attributes.getQName(i), attributes.getValue(i));
 				}
 				words.add(token);
 			}
@@ -131,7 +146,12 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				morphItems.clear();
 				SToken token = SaltFactory.createSToken();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					createAnnotation(token, "morpheme", attributes.getQName(i), attributes.getValue(i));
+					/* 
+					 * Use Salt API here as annotation is expected to be unique 
+					 * and FLExReader API needs a node ID 
+					 * (which is null at this point).
+					 */
+					token.createAnnotation("morpheme", attributes.getQName(i), attributes.getValue(i));
 				}
 				morphemes.add(token);
 			}
@@ -209,8 +229,8 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 			}
 			else if (TAG_PARAGRAPH.equals(qName)) {
 				SSpan span = paragraph;
-				createAnnotation(span, "paragraph", "seqnum", Integer.toString(++paragraphCount));
 				graph.addNode(span);
+				createAnnotation(span, "paragraph", "seqnum", Integer.toString(++paragraphCount));
 				for (SSpan phrase : phrases) {
 					for (SToken token : graph.getOverlappedTokens(phrase)) {
 						SSpanningRelation spanRel = SaltFactory.createSSpanningRelation();
@@ -245,6 +265,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				STextualDS ds = graph.getTextualDSs().size() == 1 ? graph.createTextualDS("") : graph.getTextualDSs().get(1);
 				Iterator<Map<String, String>> rowIterator = wordItems.rowMap().values().iterator();
 				SToken token = words.lastElement();
+				graph.addNode(token);
 				String tokenText = null;
 				String type = null;
 				while (rowIterator.hasNext()) {
@@ -264,7 +285,6 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				textRel.setTarget(ds);
 				textRel.setStart(oldTextLength);
 				textRel.setEnd(ds.getText().length());
-				graph.addNode(token);
 				graph.addRelation(textRel);
 				
 				
@@ -288,6 +308,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				STextualDS ds = graph.getTextualDSs().size() == 0 ? graph.createTextualDS("") : graph.getTextualDSs().get(0);
 				Iterator<Map<String, String>> rowIterator = morphItems.rowMap().values().iterator();
 				SToken token = morphemes.lastElement();
+				graph.addNode(token);
 				String tokenText = null;
 				while (rowIterator.hasNext()) {
 					Map<String, String> row = rowIterator.next();
@@ -316,7 +337,6 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				textRel.setTarget(ds);
 				textRel.setStart(oldTextLength);
 				textRel.setEnd(ds.getText().length());
-				graph.addNode(token);
 				graph.addRelation(textRel);
 				
 				int timeSteps = tokenText.length();
