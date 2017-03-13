@@ -1,6 +1,5 @@
 package org.corpus_tools.peppermodules.flex.readers;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
@@ -24,8 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import org.xml.sax.ext.DefaultHandler2;
-
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
@@ -34,7 +31,7 @@ import com.google.common.collect.Table;
  *
  * @author XMLTagExtractor
  **/
-public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
+public class FLExDocumentReader extends FLExReader implements FLExText {
 	
 	private enum Element {
 		DOCUMENT, INTERLINEAR_TEXT, PARAGRAPHS, PARAGRAPH, PHRASES, PHRASE, WORDS, WORD, MORPHEMES, MORPH, ITEM
@@ -62,8 +59,6 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 	private final Table<String, String, String> wordItems = HashBasedTable.create();
 	private final Table<String, String, String> phraseItems = HashBasedTable.create();
 	
-	private Map<String, String> activeAttributes = new HashMap<>();
-
 	private int wordTimelineStart;
 
 	private boolean wordHasMorphemes;
@@ -101,7 +96,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				phrases.clear();
 				SSpan span = SaltFactory.createSSpan();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					span.createAnnotation("paragraph", attributes.getQName(i), attributes.getValue(i));
+					createAnnotation(span, "paragraph", attributes.getQName(i), attributes.getValue(i));
 				}
 				paragraph = span;
 			}
@@ -111,7 +106,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				phraseItems.clear();
 				SSpan span = SaltFactory.createSSpan();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					span.createAnnotation("phrase", attributes.getQName(i), attributes.getValue(i));
+					createAnnotation(span, "phrase", attributes.getQName(i), attributes.getValue(i));
 				}
 				phrases.add(span);
 			}
@@ -124,7 +119,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				wordTimelineStart = timelineEnd == null ? 0 : timelineEnd;
 				SToken token = SaltFactory.createSToken();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					token.createAnnotation("word", attributes.getQName(i), attributes.getValue(i));
+					createAnnotation(token, "word", attributes.getQName(i), attributes.getValue(i));
 				}
 				words.add(token);
 			}
@@ -136,7 +131,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				morphItems.clear();
 				SToken token = SaltFactory.createSToken();
 				for (int i = 0; i < attributes.getLength(); i++) {
-					token.createAnnotation("morpheme", attributes.getQName(i), attributes.getValue(i));
+					createAnnotation(token, "morpheme", attributes.getQName(i), attributes.getValue(i));
 				}
 				morphemes.add(token);
 			}
@@ -214,7 +209,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 			}
 			else if (TAG_PARAGRAPH.equals(qName)) {
 				SSpan span = paragraph;
-				span.createAnnotation("paragraph", "seqnum", ++paragraphCount);
+				createAnnotation(span, "paragraph", "seqnum", Integer.toString(++paragraphCount));
 				graph.addNode(span);
 				for (SSpan phrase : phrases) {
 					for (SToken token : graph.getOverlappedTokens(phrase)) {
@@ -232,7 +227,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 				graph.addNode(span);
 				while (rowIterator.hasNext()) {
 					Map<String, String> row = rowIterator.next();
-					span.createAnnotation("phrase_" + row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+					createAnnotation(span, "phrase_" + row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 				}
 				
 				for (SToken word : words) {
@@ -258,7 +253,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 					if (type.equals(FLEX_ITEM_TYPE__TXT) || type.equals(FLEX_ITEM_TYPE__PUNCT)) {
 						tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 					}
-					token.createAnnotation("word_" + row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+					createAnnotation(token, "word_" + row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 				}
 				String oldText = ds.getText();
 				int oldTextLength = oldText.length();
@@ -300,7 +295,7 @@ public class FLExDocumentReader extends DefaultHandler2 implements FLExText {
 						tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 					}
 					else {
-						token.createAnnotation("morpheme_" + row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+						createAnnotation(token, "morpheme_" + row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 					}
 				}
 				// Empty element content *can* occur

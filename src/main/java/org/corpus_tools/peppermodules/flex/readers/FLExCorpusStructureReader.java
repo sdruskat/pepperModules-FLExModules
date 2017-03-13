@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
-import org.xml.sax.ext.DefaultHandler2;
 
 /**
  * TODO Description
@@ -27,7 +26,7 @@ import org.xml.sax.ext.DefaultHandler2;
  * @author Stephan Druskat <mail@sdruskat.net>
  *
  */
-public class FLExCorpusStructureReader extends DefaultHandler2 implements FLExText {
+public class FLExCorpusStructureReader extends FLExReader implements FLExText {
 
 	private static final Logger logger = LoggerFactory.getLogger(FLExDocumentReader.class);
 	private SCorpus corpus;
@@ -143,7 +142,7 @@ public class FLExCorpusStructureReader extends DefaultHandler2 implements FLExTe
 								docNameSet = true;
 							}
 						}
-						doc.createMetaAnnotation(activeItemAttributes.get(FLEX__LANG_ATTR), activeItemAttributes.get(FLEX__TYPE_ATTR), activeElementValue);
+						createMetaAnnotation(doc, activeItemAttributes.get(FLEX__LANG_ATTR), activeItemAttributes.get(FLEX__TYPE_ATTR), activeElementValue);
 					}
 				}
 				// Clean up after you
