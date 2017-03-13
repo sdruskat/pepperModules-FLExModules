@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.corpus_tools.peppermodules.flex.model.FLExText;
 import org.corpus_tools.salt.common.SDocument;
+import org.corpus_tools.salt.core.SMetaAnnotation;
 import org.corpus_tools.salt.core.SNode;
 import org.xml.sax.ext.DefaultHandler2;
 
@@ -54,19 +55,25 @@ public class FLExReader extends DefaultHandler2 implements FLExText {
 
 	/**
 	 * Handles failsafe creation of meta annotations by checking against a map
-	 * whether an annotation with the same namespace and name already exists,
-	 * and adding an incrementing counter to the name should it exist.
+	 * whether an annotation with the same namespace and name already exists
+	 * for the respective node, and adding an incrementing counter to the 
+	 * name should it exist.
 	 * 
-	 * @param doc
-	 * @param string
-	 * @param string2
-	 * @param activeElementValue2
+	 * This method expects node.getId() to not return `null`!
+	 * 
+	 * @param node The node to create an annotation on (could be graphs, tokens, spans, etc.)
+	 * @param namespace The namespace of the annotation to create
+	 * @param name The nae of the annotation to create
+	 * @param value The value of the annotation to crete
+	 * @param isMeta Whether the annotation to create should be of type {@link SMetaAnnotation}
 	 */
 	private void createAnnotation(SNode node, String namespace, String name, String value, boolean isMeta) {
-		String pattern = namespace + PROCESSING__KEY_VALUE_SEPARATOR + name;
+		String pattern = node.getId() + PROCESSING__KEY_VALUE_SEPARATOR + namespace
+				+ PROCESSING__KEY_VALUE_SEPARATOR + name;
 		if (multipleAnnoMap.containsKey(pattern)) {
 			Integer count = multipleAnnoMap.get(pattern);
-			multipleAnnoMap.put(namespace + PROCESSING__KEY_VALUE_SEPARATOR + name, count++);
+			count++;
+			multipleAnnoMap.put(pattern, count);
 			if (isMeta) {
 				node.createMetaAnnotation(namespace, name + PROCESSING__UNDERSCORE + count.toString(), value);
 			} else {
