@@ -269,4 +269,5 @@ public interface FLExText {
 		public static final String PROCESSING__KEY_VALUE_SEPARATOR = "=";
 		public static final String PROCESSING__ANNOTATION_SEPARATOR = ",";
 		public static final String PROCESSING__ACTIVE_ELEMENT_VALUE = "activeElementValue";
+		public static final String PROCESSING__UNDERSCORE = "_";
 }
