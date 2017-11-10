@@ -82,11 +82,11 @@ public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 				schema = sf.newSchema(xsd);
 				Validator validator = schema.newValidator();
 				validator.validate(new StreamSource(corpusFile));
-				logger.info(corpusFile.getAbsolutePath() + " has validated successfully against '" + xsd.getFile() + "'.");
+				logger.debug(corpusFile.getAbsolutePath() + " has validated successfully against '" + xsd.getFile() + "'.");
 				// Every .flextext file is a *corpus*, not a *document*!
 			}
 			catch (SAXException | IOException e) {
-				logger.error(corpusFile.getAbsolutePath() + " has not validated successfully against '" + xsd.getFile() + "'! Ignoring file.", e);
+				logger.warning(corpusFile.getAbsolutePath() + " has not validated successfully against '" + xsd.getFile() + "'! Ignoring file.", e);
 				return;
 			} 
 			// Parse FLEXText file once to create documents
