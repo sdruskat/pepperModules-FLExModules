@@ -42,6 +42,9 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 	private final SDocument doc;
 	private final SDocumentGraph graph;
 	
+	private final STextualDS morphDS;
+	private final STextualDS wordDS;
+	
 	private boolean isCorrectDocument = false;
 	private boolean isItemActiveElement = false;
 	private Element itemParent = null;
@@ -70,6 +73,10 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 	public FLExDocumentReader(SDocument document) {
 		this.doc = document; 
 		this.graph = document.getDocumentGraph();
+		morphDS = graph.createTextualDS("");
+		morphDS.setName("morph");
+		wordDS = graph.createTextualDS("");
+		wordDS.setName("word");
 	}
 
 	/*
@@ -213,7 +220,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 					break;
 
 				default:
-					System.err.println("CHARS CANNOT BELONG TO ITEM");
+					logger.error("CHARS CANNOT BELONG TO ITEM");
 					break;
 				}
 			}
@@ -247,7 +254,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				graph.addNode(span);
 				while (rowIterator.hasNext()) {
 					Map<String, String> row = rowIterator.next();
-					createAnnotation(span, "phrase_" + row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+					createAnnotation(span, row.get(FLEX__LANG_ATTR), "phrase_" + row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 				}
 				
 				for (SToken word : words) {
@@ -262,10 +269,17 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 			else if (TAG_WORD.equals(qName)) {
 				STimeline timeline = graph.getTimeline();
 				
-				STextualDS ds = graph.getTextualDSs().size() == 1 ? graph.createTextualDS("") : graph.getTextualDSs().get(1);
 				Iterator<Map<String, String>> rowIterator = wordItems.rowMap().values().iterator();
 				SToken token = words.lastElement();
 				graph.addNode(token);
+//				if (words.size() > 1) {
+//					SToken lastToken = words.get(words.size() - 2);
+//					SOrderRelation rel = SaltFactory.createSOrderRelation();
+//					rel.setSource(lastToken);
+//					rel.setTarget(token);
+//					rel.setType("word");
+//					graph.addRelation(rel);
+//				}
 				String tokenText = null;
 				String type = null;
 				while (rowIterator.hasNext()) {
@@ -274,19 +288,19 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 					if (type.equals(FLEX_ITEM_TYPE__TXT) || type.equals(FLEX_ITEM_TYPE__PUNCT)) {
 						tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 					}
-					createAnnotation(token, "word_" + row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+					createAnnotation(token, row.get(FLEX__LANG_ATTR), "word_" + row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 				}
-				String oldText = ds.getText();
+				String oldText = wordDS.getText();
 				int oldTextLength = oldText.length();
-				ds.setText(oldText += tokenText);
+				wordDS.setText(oldText += wordDS.getText().length() == 0 ? tokenText : " " + tokenText);
 				
 				STextualRelation textRel = SaltFactory.createSTextualRelation();
 				textRel.setSource(token);
-				textRel.setTarget(ds);
-				textRel.setStart(oldTextLength);
-				textRel.setEnd(ds.getText().length());
+				textRel.setTarget(wordDS);
+				boolean dSHasOneToken = wordDS.getText().length() == tokenText.length();
+				textRel.setStart(dSHasOneToken ? oldTextLength : oldTextLength + 1);
+				textRel.setEnd(wordDS.getText().length());
 				graph.addRelation(textRel);
-				
 				
 				// Word does not contain morphemes, e.g. in case of punctuation
 				if (!wordHasMorphemes) {
@@ -305,10 +319,17 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				STimeline timeline = graph.getTimeline();
 				int timelineEnd = timeline.getEnd() == null ? 0 : timeline.getEnd();
 
-				STextualDS ds = graph.getTextualDSs().size() == 0 ? graph.createTextualDS("") : graph.getTextualDSs().get(0);
 				Iterator<Map<String, String>> rowIterator = morphItems.rowMap().values().iterator();
 				SToken token = morphemes.lastElement();
 				graph.addNode(token);
+//				if (morphemes.size() > 1) {
+//					SToken lastToken = morphemes.get(morphemes.size() - 2);
+//					SOrderRelation rel = SaltFactory.createSOrderRelation();
+//					rel.setSource(lastToken);
+//					rel.setTarget(token);
+//					rel.setType("morph");
+//					graph.addRelation(rel);
+//				}
 				String tokenText = null;
 				while (rowIterator.hasNext()) {
 					Map<String, String> row = rowIterator.next();
@@ -316,7 +337,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 						tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 					}
 					else {
-						createAnnotation(token, "morpheme_" + row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+						createAnnotation(token, row.get(FLEX__LANG_ATTR), "morph_" + row.get(FLEX__TYPE_ATTR), row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 					}
 				}
 				// Empty element content *can* occur
@@ -328,15 +349,15 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 					 */
 					tokenText = "NULL";
 				}
-				String oldText = ds.getText();
+				String oldText = morphDS.getText();
 				int oldTextLength = oldText.length();
-				ds.setText(oldText += tokenText);
+				morphDS.setText(oldText += tokenText);
 
 				STextualRelation textRel = SaltFactory.createSTextualRelation();
 				textRel.setSource(token);
-				textRel.setTarget(ds);
+				textRel.setTarget(morphDS);
 				textRel.setStart(oldTextLength);
-				textRel.setEnd(ds.getText().length());
+				textRel.setEnd(morphDS.getText().length());
 				graph.addRelation(textRel);
 				
 				int timeSteps = tokenText.length();
@@ -365,15 +386,39 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 	
 
 
-//	/**
-//	 * TODO: Description
-//	 *
-//	 */
-//	private void reset() {
-//		activeElement = null;
-//		activeElementValue = null;
-//		activeAttributes.clear();
-//		activeItems.clear();
+////	/**
+////	 * TODO: Description
+////	 *
+////	 */
+////	private void reset() {
+////		activeElement = null;
+////		activeElementValue = null;
+////		activeAttributes.clear();
+////		activeItems.clear();
+////	}
+//
+//	private void addOrderRelations(String layerName) {
+//		logger.info("Adding order relations for \"{}\" layer in doc {}.", layerName, graph.getDocument().getName());
+//		List<SToken> tokens = new ArrayList<>();
+//		Set<SNode> layerNodes = graph.getLayerByName(layerName).get(0).getNodes();
+//		Iterator<SNode> iterator = layerNodes.iterator();
+//		while (iterator.hasNext()) {
+//			SNode node;
+//			if ((node = iterator.next()) instanceof SToken) {
+//				tokens.add((SToken) node);
+//			}
+//		}
+//		List<SToken> sortedTokens = graph.getSortedTokenByText(tokens);
+//		for (int i = 0; i < sortedTokens.size(); i++) {
+//			SToken current = sortedTokens.get(i);
+//			try {
+//			SToken next = sortedTokens.get(i + 1);
+//			}
+//			catch (IndexOutOfBoundsException e) {
+//				
+//			}
+//			graph.createRelation(current, next, SALT_TYPE.SORDER_RELATION, null);
+//		}
 //	}
 
 	@Override
