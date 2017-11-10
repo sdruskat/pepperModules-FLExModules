@@ -86,7 +86,7 @@ public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 				// Every .flextext file is a *corpus*, not a *document*!
 			}
 			catch (SAXException | IOException e) {
-				logger.warning(corpusFile.getAbsolutePath() + " has not validated successfully against '" + xsd.getFile() + "'! Ignoring file.", e);
+				logger.warn(corpusFile.getAbsolutePath() + " has not validated successfully against '" + xsd.getFile() + "'! Ignoring file.", e);
 				return;
 			} 
 			// Parse FLEXText file once to create documents
