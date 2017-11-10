@@ -54,11 +54,11 @@ import org.corpus_tools.peppermodules.flex.FLExImporter;
  * +----------------------------------+----------------------------------+-----+-----------------+
  * | STextualDS "word" (compiled from word > item type="text")                                   |
  * +---------------------------------------------------------------------------------------------+
- * | STextualDS "morph" (compiled from morph > item type="text")                                  |
+ * | STextualDS "morph" (compiled from morph > item type="text")                                 |
  * +---------------------------------------------------------------------------------------------+
  * ```
  *
- * @author XMLTagExtractor
+ * @author Stephan Druskat (<mail@sdruskat.net>)
  **/
 public interface FLExText {
 
