@@ -3,6 +3,16 @@
  */
 package org.corpus_tools.peppermodules.flex;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import javax.xml.XMLConstants;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+
 import org.corpus_tools.pepper.common.DOCUMENT_STATUS;
 import org.corpus_tools.pepper.impl.PepperMapperImpl;
 import org.corpus_tools.peppermodules.flex.exceptions.DocumentSAXParseFinishedEvent;
@@ -13,6 +23,7 @@ import org.corpus_tools.salt.common.STextualDS;
 import org.corpus_tools.salt.core.SLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * TODO Description
@@ -28,14 +39,25 @@ public class FLExMapper extends PepperMapperImpl {
 	private static final Logger logger = LoggerFactory.getLogger(FLExMapper.class);
 	
 	@Override
-	public DOCUMENT_STATUS mapSCorpus() {
-		getCorpus().setName(getResourceURI().lastSegment());
-		return DOCUMENT_STATUS.COMPLETED;
-	}
-
-	@Override
 	public DOCUMENT_STATUS mapSDocument() {
-		SDocumentGraph graph = getDocument().getDocumentGraph() == null ? SaltFactory.createSDocumentGraph() : getDocument().getDocumentGraph();
+		// Test if file validates against XSD schema
+		File corpusFile = new File(getResourceURI().toFileString());
+		URL xsd = getClass().getClassLoader().getResource("FlexInterlinear.xsd");
+		SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI); 
+		Schema schema = null;
+		try {
+			schema = sf.newSchema(xsd);
+			Validator validator = schema.newValidator();
+			validator.validate(new StreamSource(corpusFile));
+			logger.debug(corpusFile.getAbsolutePath() + " has validated successfully against '" + xsd.getFile() + "'.");
+		}
+		catch (SAXException | IOException e) {
+			logger.warn(corpusFile.getAbsolutePath() + " has not validated successfully against '" + xsd.getFile() + "'! Ignoring file.", e);
+			return DOCUMENT_STATUS.FAILED;
+		} 
+		
+		getDocument().setDocumentGraph(SaltFactory.createSDocumentGraph());
+		SDocumentGraph graph = getDocument().getDocumentGraph();
 		// Graph set up
 		graph.createTimeline();
 		graph.addLayer(getLayer("paragraphs"));
@@ -47,9 +69,6 @@ public class FLExMapper extends PepperMapperImpl {
 		STextualDS words = graph.createTextualDS("");
 		words.setName("words");
 		
-		// Set graph on document
-		getDocument().setDocumentGraph(graph);
-
 		// Read document
 		FLExDocumentReader reader = new FLExDocumentReader(getDocument());
 		try {

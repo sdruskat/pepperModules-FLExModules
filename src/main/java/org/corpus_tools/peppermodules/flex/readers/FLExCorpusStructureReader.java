@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.corpus_tools.peppermodules.flex.model.FLExText;
 import org.corpus_tools.salt.SaltFactory;
@@ -38,6 +39,7 @@ public class FLExCorpusStructureReader extends FLExReader implements FLExText {
 	private boolean docNameSet = false;
 	private Map<String, String> activeItemAttributes = new HashMap<>();
 	private boolean docDoesExist;// = false;
+	private final AtomicInteger docIdCounter = new AtomicInteger();
 
 	/**
 	 * @param subCorpus
@@ -62,11 +64,12 @@ public class FLExCorpusStructureReader extends FLExReader implements FLExText {
 		else if (TAG_INTERLINEAR_TEXT.equals(qName)) {
 			parent = TAG_INTERLINEAR_TEXT;
 			SDocument doc = SaltFactory.createSDocument();
+			doc.setName(attributes.getValue("guid"));
 			for (int i = 0; i < attributes.getLength(); i++) {
 				String name = attributes.getQName(i);
 				String value = attributes.getValue(i);
 				for (SDocument otherDoc : corpus.getGraph().getDocuments()) {
-					if (otherDoc != doc) {
+					if (otherDoc != doc) { // compare ids
 						SMetaAnnotation otherGuidAnno = otherDoc.getMetaAnnotation(TAG_INTERLINEAR_TEXT + SaltUtil.NAMESPACE_SEPERATOR + FLEX__GUID_ATTR);
 						if (otherGuidAnno != null && otherGuidAnno.getValue_STEXT().equals(value)) {
 							docDoesExist = true;
