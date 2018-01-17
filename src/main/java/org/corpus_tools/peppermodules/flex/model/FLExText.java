@@ -44,10 +44,14 @@ import org.corpus_tools.peppermodules.flex.FLExImporter;
  * |     annotations:                                                                | ... |    
  * |         item "type"_"lang":value                                                |     |
  * +---------------------------------------------------------------------------+-----+-----+
- * | SSpan word                                                                |     |
+ * | SToken word                                                               |     |
  * |     annotations:                                                          | ... |
  * |         item "type"_"lang":value                                          |     |
- * +----------------------------------+----------------------------------+-----+-----+
+ * +-↓-↓-↓---------------------------------------------------------------------+-↓-↓-+-----------+
+ * | STimeline timeline                                                                          |
+ * |     [Ties together "word" tokens (above) and "morph" tokens (below)                         |
+ * |      to interlinearize on the real data source]                                             |
+ * +-↑-↑-↑------------------------------↑-↑-↑----------------------------+-↑-↑-+-----------------+
  * | SToken morph                     | SToken morph                     |     |
  * |     annotations:                 |     annotations:                 | ... |
  * |         item "type"_"lang":value |         item "type"_"lang":value |     |
