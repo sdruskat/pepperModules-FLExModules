@@ -19,7 +19,6 @@ import org.corpus_tools.peppermodules.flex.exceptions.DocumentSAXParseFinishedEv
 import org.corpus_tools.peppermodules.flex.readers.FLExDocumentReader;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocumentGraph;
-import org.corpus_tools.salt.common.STextualDS;
 import org.corpus_tools.salt.core.SLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,10 +63,6 @@ public class FLExMapper extends PepperMapperImpl {
 		graph.addLayer(getLayer("phrases"));
 		graph.addLayer(getLayer("words"));
 		graph.addLayer(getLayer("morphemes"));
-		STextualDS morphemes = graph.createTextualDS("");
-		morphemes.setName("morphemes");
-		STextualDS words = graph.createTextualDS("");
-		words.setName("words");
 		
 		// Read document
 		FLExDocumentReader reader = new FLExDocumentReader(getDocument());

@@ -67,9 +67,9 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 	public FLExDocumentReader(SDocument document) {
 		this.graph = document.getDocumentGraph();
 		morphDS = graph.createTextualDS("");
-		morphDS.setName("morph");
+		morphDS.setName("morphemes");
 		wordDS = graph.createTextualDS("");
-		wordDS.setName("word");
+		wordDS.setName("words");
 	}
 
 	/*
