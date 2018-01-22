@@ -1,6 +1,8 @@
 package org.corpus_tools.peppermodules.flex.readers;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -15,6 +17,7 @@ import org.corpus_tools.salt.common.STextualRelation;
 import org.corpus_tools.salt.common.STimeline;
 import org.corpus_tools.salt.common.STimelineRelation;
 import org.corpus_tools.salt.common.SToken;
+import org.corpus_tools.salt.core.SAnnotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -31,7 +34,7 @@ import com.google.common.collect.Table;
 public class FLExDocumentReader extends FLExReader implements FLExText {
 
 	private enum Element {
-		DOCUMENT, INTERLINEAR_TEXT, PARAGRAPHS, PARAGRAPH, PHRASES, PHRASE, WORDS, WORD, MORPHEMES, MORPH, ITEM
+		DOCUMENT, INTERLINEAR_TEXT, LANGUAGE, PARAGRAPHS, PARAGRAPH, PHRASES, PHRASE, WORDS, WORD, MORPHEMES, MORPH, ITEM
 	}
 
 	private static final Logger logger = LoggerFactory.getLogger(FLExDocumentReader.class);
@@ -47,11 +50,13 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 	private Vector<SToken> morphemes = new Vector<>();
 	private Vector<SToken> words = new Vector<>();
 	private Vector<SSpan> phrases = new Vector<>();
+	private List<SAnnotation> languages = new ArrayList<>();
 	private SSpan paragraph = null;
 	private int wordLength = 0;
 
 	private int paragraphCount = 0;
 
+	private final Table<String, String, String> interlinearTextItems = HashBasedTable.create();
 	private final Table<String, String, String> morphItems = HashBasedTable.create();
 	private final Table<String, String, String> wordItems = HashBasedTable.create();
 	private final Table<String, String, String> phraseItems = HashBasedTable.create();
@@ -79,7 +84,29 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-		if (TAG_PARAGRAPH.equals(qName)) {
+		if (TAG_INTERLINEAR_TEXT.equals(qName)) {
+			itemParent = Element.INTERLINEAR_TEXT;
+			interlinearTextItems.clear();
+			languages.clear();
+			for (int i = 0; i < attributes.getLength(); i++) {
+				/*
+				 * Use Salt API here as annotation is expected to be unique and
+				 * FLExReader API needs a node ID (which is null at this point).
+				 */
+				graph.createAnnotation("interlinear-text", attributes.getQName(i), attributes.getValue(i));
+			}
+		}
+		else if (TAG_LANGUAGE.equals(qName)) {
+			itemParent = Element.LANGUAGE;
+			SAnnotation annotation = SaltFactory.createSAnnotation();
+			annotation.setNamespace("languages");
+			annotation.setName(attributes.getValue(FLEX__LANG_ATTR));
+			annotation.setValue(FLEX_LANGUAGE__ENCODING_ATTR + "=" + attributes.getValue(FLEX_LANGUAGE__ENCODING_ATTR) + "," 
+					+ FLEX_LANGUAGE__VERNACULAR_ATTR + "=" + attributes.getValue(FLEX_LANGUAGE__VERNACULAR_ATTR) + ","
+					+ FLEX_LANGUAGE__FONT_ATTR + "=" + attributes.getValue(FLEX_LANGUAGE__FONT_ATTR));
+			languages.add(annotation);
+		}
+		else if (TAG_PARAGRAPH.equals(qName)) {
 			itemParent = Element.PARAGRAPH;
 			phrases.clear();
 			SSpan span = SaltFactory.createSSpan();
@@ -145,6 +172,16 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 			int row;
 			if (itemParent != null) {
 				switch (itemParent) {
+				case INTERLINEAR_TEXT:
+					row = interlinearTextItems.rowKeySet().size();
+					interlinearTextItems.put(String.valueOf(row), FLEX__LANG_ATTR, attributes.getValue(FLEX__LANG_ATTR));
+					interlinearTextItems.put(String.valueOf(row), FLEX__TYPE_ATTR, attributes.getValue(FLEX__TYPE_ATTR));
+					if (attributes.getType(FLEX__ANALYSIS_STATUS_ATTR) != null) {
+						interlinearTextItems.put(String.valueOf(row), FLEX__ANALYSIS_STATUS_ATTR,
+								attributes.getValue(FLEX__ANALYSIS_STATUS_ATTR));
+					}
+					break;
+
 				case MORPH:
 					row = morphItems.rowKeySet().size();
 					morphItems.put(String.valueOf(row), FLEX__LANG_ATTR, attributes.getValue(FLEX__LANG_ATTR));
@@ -187,6 +224,10 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 		if (isItemActiveElement) {
 			if (itemParent != null) {
 				switch (itemParent) {
+				case INTERLINEAR_TEXT:
+					interlinearTextItems.put(String.valueOf(interlinearTextItems.rowKeySet().size() - 1), PROCESSING__ACTIVE_ELEMENT_VALUE, new String(ch, start, length));
+					return;
+
 				case MORPH:
 					morphItems.put(String.valueOf(morphItems.rowKeySet().size() - 1), PROCESSING__ACTIVE_ELEMENT_VALUE,
 							new String(ch, start, length));
@@ -212,7 +253,18 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
-		if (TAG_PARAGRAPH.equals(qName)) {
+		if (TAG_INTERLINEAR_TEXT.equals(qName)) {
+			for (SAnnotation language : languages) {
+				graph.addAnnotation(language);
+			}
+			Iterator<Map<String, String>> rowIterator = interlinearTextItems.rowMap().values().iterator();
+			while (rowIterator.hasNext()) {
+				Map<String, String> row = rowIterator.next();
+				graph.createAnnotation(row.get(FLEX__LANG_ATTR), "interlinear-text_" + row.get(FLEX__TYPE_ATTR),
+						row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+			}
+		}
+		else if (TAG_PARAGRAPH.equals(qName)) {
 			SSpan span = paragraph;
 			graph.addNode(span);
 			createAnnotation(span, "paragraph", "seqnum", Integer.toString(++paragraphCount));
