@@ -93,7 +93,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				 * Use Salt API here as annotation is expected to be unique and
 				 * FLExReader API needs a node ID (which is null at this point).
 				 */
-				graph.createAnnotation("interlinear-text", attributes.getQName(i), attributes.getValue(i));
+				graph.getDocument().createAnnotation("interlinear-text", attributes.getQName(i), attributes.getValue(i));
 			}
 		}
 		else if (TAG_LANGUAGE.equals(qName)) {
@@ -255,12 +255,12 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		if (TAG_INTERLINEAR_TEXT.equals(qName)) {
 			for (SAnnotation language : languages) {
-				graph.addAnnotation(language);
+				graph.getDocument().addAnnotation(language);
 			}
 			Iterator<Map<String, String>> rowIterator = interlinearTextItems.rowMap().values().iterator();
 			while (rowIterator.hasNext()) {
 				Map<String, String> row = rowIterator.next();
-				graph.createAnnotation(row.get(FLEX__LANG_ATTR), "interlinear-text_" + row.get(FLEX__TYPE_ATTR),
+				graph.getDocument().createAnnotation(row.get(FLEX__LANG_ATTR), "interlinear-text_" + row.get(FLEX__TYPE_ATTR),
 						row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 			}
 		}
