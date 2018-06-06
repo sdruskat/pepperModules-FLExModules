@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document version="2">
+  <interlinear-text guid="5c7ca17a-c656-42ec-bf17-bab39b6272a0">
+    <item lang="mmg-fonipa-x-emic" type="title">Title</item>
+    <item lang="mmg-fonipa-x-emic" type="source">Foo Bar</item>
+    <paragraphs>
+      <paragraph guid="091f3010-2a9c-4721-aabf-af4931a3b318">
+        <phrases>
+          <phrase guid="4d685927-f383-474c-9a3e-859cc5f4d3bd">
+            <item lang="en" type="segnum">2.4</item>
+            <words>
+              <word guid="69f013e1-1c4e-4640-b1d8-2deef3f75f1b">
+                <item lang="mmg-fonipa-x-emic" type="txt">Te</item>
+                <morphemes>
+                  <morph>
+                    <item lang="mmg-fonipa-x-emic" type="txt">te</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">NREC.PST</item>
+              </word>
+              <word guid="2d62672b-e148-4a33-9751-b24fa8720398">
+                <item lang="mmg-fonipa-x-emic" type="txt">bya</item>
+                <morphemes>
+                  <morph guid="d7f713e5-e8cf-11d3-9764-00c04f186933" type="root">
+                    <item lang="mmg-fonipa-x-emic" type="txt">bya</item>
+                    <item lang="mmg-fonipa-x-emic" type="cf">bya</item>
+                    <item lang="en" type="gls">go</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">go</item>
+              </word>
+              <word guid="c362a6f6-2f19-4315-ac78-d2d8266bb854">
+                <item lang="mmg-fonipa-x-emic" type="txt">rru</item>
+                <morphemes>
+                  <morph guid="d7f713e5-e8cf-11d3-9764-00c04f186933" type="root">
+                    <item lang="mmg-fonipa-x-emic" type="txt">rru</item>
+                    <item lang="mmg-fonipa-x-emic" type="cf">rru</item>
+                    <item lang="en" type="hn">1</item>
+                    <item lang="en" type="gls">stay</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">stay</item>
+              </word>
+              <word guid="db914ce3-799c-4a9b-bc83-70b6f3832b62">
+                <item lang="mmg-fonipa-x-emic" type="txt">te</item>
+                <morphemes>
+                  <morph>
+                    <item lang="mmg-fonipa-x-emic" type="txt">te</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">NREC.PST</item>
+              </word>
+              <word guid="9776306c-b0c0-4c92-a11e-83336b3e9c3f">
+                <item lang="mmg-fonipa-x-emic" type="txt">fhe</item>
+                <morphemes>
+                  <morph>
+                    <item lang="mmg-fonipa-x-emic" type="txt">fhe</item>
+                    <item lang="en" type="gls">like</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">like</item>
+              </word>
+              <word>
+                <item lang="mmg-fonipa-x-emic" type="punct">,</item>
+              </word>
+              <word guid="3eeeb05b-19ae-4ffb-b3b0-2de68b5aafbe">
+                <item lang="mmg-fonipa-x-emic" type="txt">lehe</item>
+                <morphemes>
+                  <morph guid="d7f713e5-e8cf-11d3-9764-00c04f186933" type="root">
+                    <item lang="mmg-fonipa-x-emic" type="txt">lehe</item>
+                    <item lang="mmg-fonipa-x-emic" type="cf">lehe</item>
+                    <item lang="en" type="hn">1</item>
+                    <item lang="en" type="gls">see</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">look</item>
+              </word>
+              <word guid="bdf506a3-13d8-4879-ac18-1cfa5e615b3b">
+                <item lang="mmg-fonipa-x-emic" type="txt">ta</item>
+                <morphemes>
+                  <morph guid="d7f713e5-e8cf-11d3-9764-00c04f186933" type="root">
+                    <item lang="mmg-fonipa-x-emic" type="txt">ta</item>
+                    <item lang="mmg-fonipa-x-emic" type="cf">ta</item>
+                    <item lang="en" type="hn">1</item>
+                    <item lang="en" type="gls">from</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">from</item>
+              </word>
+              <word guid="cf2bd179-f04d-449d-ae4f-baca0c6bad0f">
+                <item lang="mmg-fonipa-x-emic" type="txt">Foobar</item>
+                <morphemes>
+                  <morph guid="d7f713e5-e8cf-11d3-9764-00c04f186933" type="root">
+                    <item lang="mmg-fonipa-x-emic" type="txt">Foobar</item>
+                    <item lang="mmg-fonipa-x-emic" type="cf">Foobar</item>
+                    <item lang="en" type="gls">Foobar</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">Foobar</item>
+              </word>
+              <word guid="db914ce3-799c-4a9b-bc83-70b6f3832b62">
+                <item lang="mmg-fonipa-x-emic" type="txt">te</item>
+                <morphemes>
+                  <morph>
+                    <item lang="mmg-fonipa-x-emic" type="txt">te</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">NREC.PST</item>
+              </word>
+              <word guid="31dd67fe-bfce-486f-a129-43b6797c6840">
+                <item lang="mmg-fonipa-x-emic" type="txt">fe</item>
+                <morphemes>
+                  <morph guid="d7f713e5-e8cf-11d3-9764-00c04f186933" type="root">
+                    <item lang="mmg-fonipa-x-emic" type="txt">fe</item>
+                    <item lang="mmg-fonipa-x-emic" type="cf">fe</item>
+                    <item lang="en" type="hn">1</item>
+                    <item lang="en" type="gls">say</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">say</item>
+              </word>
+              <word guid="e11fd03a-7180-4e91-8579-d5065f7e01eb">
+                <item lang="mmg-fonipa-x-emic" type="txt">a</item>
+                <morphemes>
+                  <morph>
+                    <item lang="mmg-fonipa-x-emic" type="txt">a</item>
+                    <item lang="en" type="gls">go</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">go</item>
+              </word>
+              <word guid="311a7039-7bf4-485e-90ce-f19e39b6f79a">
+                <item lang="mmg-fonipa-x-emic" type="txt">lelne</item>
+                <morphemes>
+                  <morph>
+                    <item lang="mmg-fonipa-x-emic" type="txt">lel</item>
+                    <item lang="en" type="gls">walk</item>
+                  </morph>
+                  <morph guid="d7f713dd-e8cf-11d3-9764-00c04f186933" type="suffix">
+                    <item lang="mmg-fonipa-x-emic" type="txt">-ne</item>
+                    <item lang="mmg-fonipa-x-emic" type="cf">-ne</item>
+                    <item lang="en" type="gls">transitive</item>
+                  </morph>
+                </morphemes>
+              </word>
+              <word guid="db5984f3-a216-4fb0-aa45-41c44fbcd132">
+                <item lang="mmg-fonipa-x-emic" type="txt">tungan</item>
+                <morphemes>
+                  <morph>
+                    <item lang="mmg-fonipa-x-emic" type="txt">tungan</item>
+                    <item lang="en" type="gls">revenge</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">war</item>
+              </word>
+              <word guid="2d62672b-e148-4a33-9751-b24fa8720398">
+                <item lang="mmg-fonipa-x-emic" type="txt">bya</item>
+                <morphemes>
+                  <morph guid="d7f713e5-e8cf-11d3-9764-00c04f186933" type="root">
+                    <item lang="mmg-fonipa-x-emic" type="txt">bya</item>
+                    <item lang="mmg-fonipa-x-emic" type="cf">bya</item>
+                    <item lang="en" type="gls">go</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">go</item>
+              </word>
+              <word guid="5247732c-8c86-4fc3-a6a2-2ad22a00f472">
+                <item lang="mmg-fonipa-x-emic" type="txt">Raboof</item>
+                <morphemes>
+                  <morph guid="d7f713e5-e8cf-11d3-9764-00c04f186933" type="root">
+                    <item lang="mmg-fonipa-x-emic" type="txt">Raboof</item>
+                    <item lang="mmg-fonipa-x-emic" type="cf">Raboof</item>
+                    <item lang="en" type="gls">Raboof</item>
+                  </morph>
+                </morphemes>
+                <item lang="en" type="gls">Raboof</item>
+              </word>
+              <word>
+                <item lang="mmg-fonipa-x-emic" type="punct">.</item>
+              </word>
+            </words>
+            <item lang="en" type="gls"/>
+            <item lang="bi" type="gls"/>
+          </phrase>
+        </phrases>
+      </paragraph>
+    </paragraphs>
+    <languages>
+      <language font="Times New Roman" lang="mmg-fonipa-x-emic" vernacular="true"/>
+      <language font="Times New Roman" lang="en"/>
+      <language font="Times New Roman" lang="bi"/>
+    </languages>
+  </interlinear-text>
+</document>
