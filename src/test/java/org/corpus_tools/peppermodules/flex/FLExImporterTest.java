@@ -4,6 +4,7 @@ import org.corpus_tools.peppermodules.flex.FLExImporter;
 import org.corpus_tools.salt.common.SDocumentGraph;
 import org.corpus_tools.salt.common.STimelineRelation;
 import org.corpus_tools.salt.common.SToken;
+import org.corpus_tools.salt.common.SaltProject;
 import org.corpus_tools.salt.core.SLayer;
 import org.corpus_tools.salt.core.SNode;
 import org.corpus_tools.salt.core.SRelation;
@@ -139,6 +140,8 @@ public class FLExImporterTest extends PepperImporterTest {
 				}
 			}
 		}
+		SaltProject project = getFixture().getSaltProject();
+		project.saveSaltProject(URI.createFileURI("/home/stephan/tmp/flextest/saltproject/"));
 	}
 
 	private String getFile(String fileName) {
