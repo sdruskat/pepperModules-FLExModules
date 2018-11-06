@@ -1,6 +1,7 @@
 package org.corpus_tools.peppermodules.flex;
 
 import org.corpus_tools.peppermodules.flex.FLExImporter;
+import org.corpus_tools.peppermodules.flex.properties.FLExImporterProperties;
 import org.corpus_tools.salt.common.SDocumentGraph;
 import org.corpus_tools.salt.common.STimelineRelation;
 import org.corpus_tools.salt.common.SToken;
@@ -14,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,10 +84,13 @@ public class FLExImporterTest extends PepperImporterTest {
 				is("FLExImporter"));
 	}
 
+	/**
+	 * // TODO Add description
+	 * 
+	 */
 	@Test
 	public void testCorrectResolutionOfMissingMorphologyMaterialAndAnnotations() {
-		getFixture().setCorpusDesc(
-				new CorpusDesc().setCorpusPath(URI.createFileURI(getFile("missing-morph-annos.flextext"))));
+		setTestFile("missing-morph-annos.flextext");
 		start();
 
 		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
@@ -146,6 +151,32 @@ public class FLExImporterTest extends PepperImporterTest {
 
 	private String getFile(String fileName) {
 		return this.getClass().getClassLoader().getResource(fileName).getFile();
+	}
+	
+	/**
+	 * Tests whether annotations are correctly changed
+	 * during the conversion process.
+	 * 
+	 * Annotations to be changed can be defined in the
+	 * module properties.
+	 * 
+	 * After conversion, these should have mapped
+	 * correctly to annotations. 
+	 */
+	@Test
+	public void testMarkerChanges() {
+		setTestFile("short-sample.flextext");
+		setProperties("properties/short-sample.properties");
+	}
+
+	private void setProperties(String fileName) {
+		FLExImporterProperties properties = new FLExImporterProperties();
+		properties.setPropertyValues(new File(getFile(fileName)));
+		getFixture().setProperties(properties);
+	}
+
+	private void setTestFile(String fileName) {
+		getFixture().setCorpusDesc(new CorpusDesc().setCorpusPath(URI.createFileURI(getFile(fileName))));
 	}
 
 }
