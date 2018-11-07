@@ -6,6 +6,7 @@ import org.corpus_tools.salt.common.SDocumentGraph;
 import org.corpus_tools.salt.common.STimelineRelation;
 import org.corpus_tools.salt.common.SToken;
 import org.corpus_tools.salt.common.SaltProject;
+import org.corpus_tools.salt.core.SAnnotation;
 import org.corpus_tools.salt.core.SLayer;
 import org.corpus_tools.salt.core.SNode;
 import org.corpus_tools.salt.core.SRelation;
@@ -19,7 +20,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.anyOf;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -36,7 +36,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.core.Appender;
 
 /**
- * // TODO Add description
+ * Unit tests for the FLEx importer module.
  *
  * @author Stephan Druskat <[mail@sdruskat.net](mailto:mail@sdruskat.net)>
  * 
@@ -74,20 +74,12 @@ public class FLExImporterTest extends PepperImporterTest {
 		addFormatWhichShouldBeSupported(formatDef);
 	}
 
-	@Test
-	public void test_DummyImplementation() {
-		getFixture().getCorpusDesc().setCorpusPath(getTempURI("FLExImporter"));
-		start();
-
-		assertNotNull(getFixture().getSaltProject());
-		assertThat(getFixture().getSaltProject().getCorpusGraphs().get(0).getCorpora().get(0).getName(),
-				is("FLExImporter"));
-	}
-
 	/**
 	 * // TODO Add description
+	 * FIXME: What does this actually test?
 	 * 
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
 	public void testCorrectResolutionOfMissingMorphologyMaterialAndAnnotations() {
 		setTestFile("missing-morph-annos.flextext");
@@ -153,21 +145,107 @@ public class FLExImporterTest extends PepperImporterTest {
 		return this.getClass().getClassLoader().getResource(fileName).getFile();
 	}
 	
+	/* 
+	 * ███████╗███████╗ █████╗ ████████╗██╗   ██╗██████╗ ███████╗███████╗
+	 * ██╔════╝██╔════╝██╔══██╗╚══██╔══╝██║   ██║██╔══██╗██╔════╝██╔════╝
+	 * █████╗  █████╗  ███████║   ██║   ██║   ██║██████╔╝█████╗  ███████╗
+	 * ██╔══╝  ██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗██╔══╝  ╚════██║
+	 * ██║     ███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║███████╗███████║
+	 * ╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝
+	 */
+
 	/**
-	 * Tests whether annotations are correctly changed
-	 * during the conversion process.
-	 * 
-	 * Annotations to be changed can be defined in the
-	 * module properties.
-	 * 
-	 * After conversion, these should have mapped
-	 * correctly to annotations. 
+	 * Tests whether languages are correctly changed
+	 * during the conversion process, with a full
+	 * language set.
 	 */
 	@Test
-	public void testMarkerChanges() {
+	public void testLanguageMapping() {
 		setTestFile("short-sample.flextext");
-		setProperties("properties/short-sample.properties");
+		setProperties("properties/language-map.properties");
+		start();
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		for (SNode node : graph.getNodes()) {
+			for (SAnnotation a : node.getAnnotations()) {
+				/* 
+				 * Nothing else defined in the properties,
+				 * hence languages should be mapped to namespaces.
+				 */
+				String val = a.getValue_STEXT();
+				String ns = a.getNamespace();
+				if (val.equals("pus")) {
+					/* 
+					 * Original language = "qaa-x-kal", 
+					 * should now be "something"
+					 */
+					assertThat(ns, is("something"));
+				}
+				else if (val.equals("green")) {
+					/* 
+					 * Original language = "en", 
+					 * should now be "ENGLISH"
+					 */
+					assertThat(ns, is("ENGLISH"));
+				}
+				else if (val.equals("french-example")) {
+					/* 
+					 * Original language = "fr", 
+					 * should now be "FRENCH?"
+					 */
+					assertThat(ns, is("FRENCH?"));
+				}
+			}
+		}
 	}
+	
+	/**
+	 * Tests whether languages are correctly changed
+	 * during the conversion process, with a non-full
+	 * language set (`fr` is not mapped).
+	 */
+	@Test
+	public void testIncompleteLanguageMapping() {
+		setTestFile("short-sample.flextext");
+		setProperties("properties/incomplete-language-map.properties");
+		start();
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		for (SNode node : graph.getNodes()) {
+			for (SAnnotation a : node.getAnnotations()) {
+				/* 
+				 * Nothing else defined in the properties,
+				 * hence languages should be mapped to namespaces.
+				 */
+				String val = a.getValue_STEXT();
+				String ns = a.getNamespace();
+				if (val.equals("pus")) {
+					/* 
+					 * Original language = "qaa-x-kal", 
+					 * should now be "something"
+					 */
+					assertThat(ns, is("something"));
+				}
+				else if (val.equals("green")) {
+					/* 
+					 * Original language = "en", 
+					 * should now be "ENGLISH"
+					 */
+					assertThat(ns, is("ENGLISH"));
+				}
+				else if (val.equals("french-example")) {
+					/* 
+					 * Original language = "fr", 
+					 * should be unchanged
+					 */
+					assertThat(ns, is("fr"));
+				}
+			}
+		}
+	}
+
 
 	private void setProperties(String fileName) {
 		FLExImporterProperties properties = new FLExImporterProperties();

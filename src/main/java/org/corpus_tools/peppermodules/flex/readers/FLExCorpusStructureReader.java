@@ -3,12 +3,10 @@
  */
 package org.corpus_tools.peppermodules.flex.readers;
 
-import java.util.HashMap;
+import java.util.HashMap; 
 import java.util.Map;
 import java.util.Stack;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.corpus_tools.peppermodules.flex.model.FLExText;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SCorpus;
@@ -22,10 +20,14 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
- * TODO Description
- *
+ * A reader class for FLEx XML which extracts
+ * the corpus structure.
+ * 
+ * The read is not performant, so that it must
+ * be considered a best practice to only
+ * have one document per file.
+ * 
  * @author Stephan Druskat <mail@sdruskat.net>
- *
  */
 public class FLExCorpusStructureReader extends FLExReader implements FLExText {
 
@@ -39,12 +41,12 @@ public class FLExCorpusStructureReader extends FLExReader implements FLExText {
 	private boolean docNameSet = false;
 	private Map<String, String> activeItemAttributes = new HashMap<>();
 	private boolean docDoesExist;// = false;
-	private final AtomicInteger docIdCounter = new AtomicInteger();
 
 	/**
 	 * @param subCorpus
 	 */
 	public FLExCorpusStructureReader(SCorpus subCorpus) {
+		super(null);
 		this.corpus = subCorpus;
 	}
 
@@ -109,7 +111,7 @@ public class FLExCorpusStructureReader extends FLExReader implements FLExText {
 				doc.createMetaAnnotation(TAG_LANGUAGES, lang, FLEX_LANGUAGE__ENCODING_ATTR + PROCESSING__KEY_VALUE_SEPARATOR + encoding + PROCESSING__ANNOTATION_SEPARATOR + FLEX_LANGUAGE__VERNACULAR_ATTR + PROCESSING__KEY_VALUE_SEPARATOR + vernacular + PROCESSING__ANNOTATION_SEPARATOR + FLEX_LANGUAGE__FONT_ATTR + PROCESSING__KEY_VALUE_SEPARATOR + font);
 			}
 		}
-		// FIXME: Bug #3
+		// FIXME: Bug #3, https://scm.cms.hu-berlin.de/druskats/pepperModules-FLExModules/issues
 //		else if (TAG_MEDIA_FILES.equal(qName)) {
 //			
 //		}
@@ -137,7 +139,7 @@ public class FLExCorpusStructureReader extends FLExReader implements FLExText {
 				if (parent != null) {
 					// Note: Handle only child `item`s of TAG_INTERLINEAR_TEXT
 					if (parent.equals(TAG_INTERLINEAR_TEXT)) {
-						// FIXME: Bug #2
+						// FIXME: Bug #2, https://scm.cms.hu-berlin.de/druskats/pepperModules-FLExModules/issues
 						if (activeItemAttributes.get(FLEX__TYPE_ATTR).equals(FLEX_ITEM_TYPE__TITLE)) {
 							docName = activeElementValue;
 							if (activeItemAttributes.get(FLEX__LANG_ATTR).equals("en")) {

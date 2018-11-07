@@ -1,11 +1,12 @@
 package org.corpus_tools.peppermodules.flex.readers;
 
-import java.util.ArrayList;
+import java.util.ArrayList; 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.corpus_tools.pepper.modules.PepperModuleProperties;
 import org.corpus_tools.peppermodules.flex.model.FLExText;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocument;
@@ -66,10 +67,11 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 	private boolean wordHasMorphemes;
 
 	/**
-	 * @param graph
 	 * @param document
+	 * @param pepperModuleProperties 
 	 */
-	public FLExDocumentReader(SDocument document) {
+	public FLExDocumentReader(SDocument document, PepperModuleProperties pepperModuleProperties) {
+		super(pepperModuleProperties);
 		this.graph = document.getDocumentGraph();
 		morphDS = graph.createTextualDS("");
 		morphDS.setName("morphological-data");
@@ -284,7 +286,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 			graph.addNode(span);
 			while (rowIterator.hasNext()) {
 				Map<String, String> row = rowIterator.next();
-				createAnnotation(span, row.get(FLEX__LANG_ATTR), "phrase_" + row.get(FLEX__TYPE_ATTR),
+				createLanguagedAnnotation(span, row.get(FLEX__LANG_ATTR), "phrase_" + row.get(FLEX__TYPE_ATTR),
 						row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 			}
 
@@ -317,7 +319,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				if (type.equals(FLEX_ITEM_TYPE__TXT) || type.equals(FLEX_ITEM_TYPE__PUNCT)) {
 					tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 				}
-				createAnnotation(token, row.get(FLEX__LANG_ATTR), "word_" + row.get(FLEX__TYPE_ATTR),
+				createLanguagedAnnotation(token, row.get(FLEX__LANG_ATTR), "word_" + row.get(FLEX__TYPE_ATTR),
 						row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 			}
 			String oldText = wordDS.getText();
@@ -359,7 +361,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 					tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 				}
 				else {
-					createAnnotation(token, row.get(FLEX__LANG_ATTR), "morph_" + row.get(FLEX__TYPE_ATTR),
+					createLanguagedAnnotation(token, row.get(FLEX__LANG_ATTR), "morph_" + row.get(FLEX__TYPE_ATTR),
 							row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 				}
 			}

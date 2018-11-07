@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<document version="2">
+  <interlinear-text guid="bcabf849-473c-4902-957b-8de378248b7f">
+    <item type="title" lang="en">Short sample</item>
+    <item type="comment" lang="en">This is a short sample for text purposes.</item>
+    <paragraphs>
+      <paragraph guid="a122d9bb-2d43-4e4c-b74f-6fe44d1c6cb2">
+        <phrases>
+          <phrase guid="b405f3c0-58e1-4492-8a40-e955774a6911">
+            <item type="segnum" lang="en">1.1</item>
+            <words>
+              <word guid="45e6f056-98ac-45d6-858e-59450993f268">
+                <item type="txt" lang="qaa-x-kal">pus</item>
+                <morphemes>
+                  <morph type="root" guid="d7f713e5-e8cf-11d3-9764-00c04f186933">
+                    <item type="txt" lang="qaa-x-kal">pus</item>
+                    <item type="cf" lang="qaa-x-kal">pus</item>
+                    <item type="hn" lang="en">1</item>
+                    <item type="gls" lang="en">green</item>
+                    <item type="msa" lang="en">adj</item>
+                  </morph>
+                </morphemes>
+                <item type="gls" lang="en">green</item>
+                <item type="pos" lang="en">mod</item>
+              </word>
+            </words>
+            <item type="gls" lang="en">I see my green mat.</item>
+            <item type="gls" lang="fr">french-example</item>
+            <item type="note" lang="en">A note in English.</item>
+          </phrase>
+        </phrases>
+      </paragraph>
+    </paragraphs>
+    <languages>
+      <language lang="en" font="Times New Roman" />
+      <language lang="qaa-x-kal" font="Charis SIL" vernacular="true" />
+      <language lang="fr" font="Charis SIL" />
+      <language lang="xas" font="Charis SIL" />
+    </languages>
+  </interlinear-text>
+</document>

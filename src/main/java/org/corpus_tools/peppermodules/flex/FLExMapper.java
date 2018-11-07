@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
- * TODO Description
+ * A mapper for FLEx XML.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  *
@@ -33,6 +33,9 @@ import org.xml.sax.SAXException;
 public class FLExMapper extends PepperMapperImpl {
 	
 	// FEFF because this is the Unicode char represented by the UTF-8 byte order mark (BOM, EF BB BF).
+    /**
+     * Unicode representation of the UTF-8 byte order mark.
+     */
     public static final String UTF8_BOM = "\uFEFF";
 
 	private static final Logger logger = LoggerFactory.getLogger(FLExMapper.class);
@@ -65,7 +68,7 @@ public class FLExMapper extends PepperMapperImpl {
 		graph.addLayer(getLayer("morphemes"));
 		
 		// Read document
-		FLExDocumentReader reader = new FLExDocumentReader(getDocument());
+		FLExDocumentReader reader = new FLExDocumentReader(getDocument(), getProperties());
 		try {
 			this.readXMLResource(reader, getResourceURI());
 		}
@@ -82,7 +85,8 @@ public class FLExMapper extends PepperMapperImpl {
 	}
 
 	/**
-	 * TODO: Description
+	 * Creates and returns a Salt
+	 * {@link SLayer} with the passed name.
 	 *
 	 * @param string
 	 * @return
@@ -92,5 +96,5 @@ public class FLExMapper extends PepperMapperImpl {
 		layer.setName(name);
 		return layer;
 	}
-
+	
 }
