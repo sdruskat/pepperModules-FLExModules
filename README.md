@@ -1,5 +1,61 @@
 # FLExText Modules for the Pepper conversion framework for linguistic data
 
+## How to cite
+
+TBA
+
+## General information
+
+TBA
+
+## Context
+
+TBA
+
+## Requirements
+
+TBA
+
+## Usage
+
+TBA
+
+## Importer
+
+### Requirements, assumptions, behaviour
+
+#### Annotation mapping
+
+FLEx XML has features that necessitate a certain importer behaviour with regard
+to annotation namespace and names.
+
+In *Salt*, the data model onto which data is mapped during import, annotations
+can have a `namespace`, and a `name`. In *FLEx XML*, one and the same annotation
+name, i.e., the `'type'` of an `<item>` can be used on different *levels*, i.e.,
+`<phrase>`, `<word>` or `<morph>`, etc. Additionally, an `<item>` also has a
+`'lang'`, so 3 attributes in *FLEx XML* must be mapped onto 2 attributes in
+*Salt* annotations.
+
+To preserve the *level* information of annotation during conversion, the
+*FLExImporter* maps it by adding the container (node/edge) of the annotation
+to a layer with the name of the level, i.e., `interlinear-text`, 
+`paragraph`, `phrase`, `word`, `morph`.
+At the same time, the *'lang'* information is recorded in the namespace of the
+*Salt* annotation.
+
+Therefore, if clients such as exporters need to re-combine this information, 
+they need to retrieve language information from the namespace, and type 
+information from the name of the annotation, and the *level* of the annotation
+from the *layer name* of the layer included in the set of layers which the 
+container of the annotation is a part of. The importer will create exactly one
+layer for each level, which will be named `interlinear-text`, 
+`paragraph`, `phrase`, `word`, `morph`.
+
+
+### Properties
+
+
+
 ## Best practices
 
 ### One document per file
