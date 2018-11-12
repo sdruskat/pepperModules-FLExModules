@@ -19,6 +19,23 @@ import org.osgi.service.component.annotations.Component;
 public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 	
 	/**
+	 * TODO
+	 */
+	public static final String LAYER_INTERLINEAR_TEXT = "interlinear-text";
+	/**
+	 * 
+	 */
+	public static final String LAYER_PHRASE = "phrase";
+	/**
+	 * 
+	 */
+	public static final String LAYER_WORD = "word";
+	/**
+	 * 
+	 */
+	public static final String LAYER_MORPH = "morphs";
+
+	/**
 	 * // TODO Add description
 	 * 
 	 */
