@@ -94,20 +94,14 @@ public class FLExReader extends DefaultHandler2 implements FLExText {
 			return;
 		}
 		// From here we can assume we have FLExImporterProperties
-		boolean shouldMapLanguageToNamespace = flexImporterProperties.shouldMapLangToNamespace();
-		if (!shouldMapLanguageToNamespace) {
-			createAnnotation(node, null, name, value, false);
-		}
-		else {
-			Map<String, String> languageMap = flexImporterProperties.getLanguageMap();
-			if (!languageMap.isEmpty()) {
-				String newLanguageString = languageMap.get(languageString);
-				if (newLanguageString != null) {
-					languageString = newLanguageString;
-				}
+		Map<String, String> languageMap = flexImporterProperties.getLanguageMap();
+		if (!languageMap.isEmpty()) {
+			String newLanguageString = languageMap.get(languageString);
+			if (newLanguageString != null) {
+				languageString = newLanguageString;
 			}
-			createAnnotation(node, languageString, name, value, false);
 		}
+		createAnnotation(node, languageString, name, value, false);
 	}
 	/**
 	 * Handles failsafe creation of (meta) annotations by checking against a map

@@ -39,10 +39,6 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	/**
 	 * 
 	 */
-	public static final String PROP_MAPLANGUAGETONAMESPACE = "mapLangToNamespace";
-	/**
-	 * 
-	 */
 	public static final String PROP_MAPPINGPATTERN = "mappingPattern";
 	private static final String MAPPING_EQUAL_SYMBOL = "=";
 	
@@ -56,9 +52,6 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	addProperty(PepperModuleProperty.create().withName(PROP_ANNOTATIONMAP).withType(String.class).withDescription(
 			"Map for changing FLEx 'type' element values (i.e., annotation keys) during conversion. Syntax: 'original-value=new-value,gls=ge")
 			.isRequired(false).build());
-	addProperty(PepperModuleProperty.create().withName(PROP_MAPLANGUAGETONAMESPACE).withType(Boolean.class).withDescription(
-			"Whether the FLEx 'lang' element value should be mapped to the Salt namespace for the annotation. Default: false.")
-			.withDefaultValue(true).isRequired(false).build());
 	}
 	
 	@SuppressWarnings("javadoc")
@@ -96,11 +89,6 @@ public class FLExImporterProperties extends PepperModuleProperties {
 			map.put(splitEntry[0].trim(), splitEntry[1].trim());
 		}
 		return map;
-	}
-
-	@SuppressWarnings("javadoc")
-	public boolean shouldMapLangToNamespace() {
-		return (boolean) getProperty(PROP_MAPLANGUAGETONAMESPACE).getValue();
 	}
 
 }

@@ -169,9 +169,7 @@ public class FLExImporterTest extends PepperImporterTest {
 		assertNotNull(graph);
 		for (SNode node : graph.getNodes()) {
 			for (SAnnotation a : node.getAnnotations()) {
-				/* 
-				 * Nothing else defined in the properties,
-				 * hence languages should be mapped to namespaces.
+				/* Languages are mapped to namespaces.
 				 */
 				String val = a.getValue_STEXT();
 				String ns = a.getNamespace();
@@ -241,6 +239,98 @@ public class FLExImporterTest extends PepperImporterTest {
 					 * should be unchanged
 					 */
 					assertThat(ns, is("fr"));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Tests whether languages are correctly changed
+	 * during the conversion process, with a full
+	 * language set.
+	 */
+	@Test
+	public void testTypeMapping() {
+		setTestFile("short-sample.flextext");
+		setProperties("properties/type-map.properties");
+		start();
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		for (SNode node : graph.getNodes()) {
+			for (SAnnotation a : node.getAnnotations()) {
+				/* 
+				 * Nothing else defined in the properties,
+				 * hence languages should be mapped to namespaces.
+				 */
+				String val = a.getValue_STEXT();
+				String ns = a.getNamespace();
+				if (val.equals("pus")) {
+					/* 
+					 * Original language = "qaa-x-kal", 
+					 * should now be "something"
+					 */
+					assertThat(ns, is("something"));
+				}
+				else if (val.equals("green")) {
+					/* 
+					 * Original language = "en", 
+					 * should now be "ENGLISH"
+					 */
+					assertThat(ns, is("ENGLISH"));
+				}
+				else if (val.equals("french-example")) {
+					/* 
+					 * Original language = "fr", 
+					 * should now be "FRENCH?"
+					 */
+					assertThat(ns, is("FRENCH?"));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Tests whether languages are correctly changed
+	 * during the conversion process, with a non-full
+	 * language set (`fr` is not mapped).
+	 */
+	@Test
+	public void testIncompleteTypeMapping() {
+		setTestFile("short-sample.flextext");
+		setProperties("properties/incomplete-type-map.properties");
+		start();
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		for (SNode node : graph.getNodes()) {
+			for (SAnnotation a : node.getAnnotations()) {
+				/* 
+				 * Nothing else defined in the properties,
+				 * hence types should be mapped to names.
+				 */
+				String val = a.getValue_STEXT();
+				String n = a.getName();
+				if (val.equals("pus")) {
+					/* 
+					 * Original types = "txt", "cf", 
+					 * should now be "tx"/"cf"
+					 */
+					assertThat(n, anyOf(is("tx"), is("cf")));
+				}
+				else if (val.equals("1")) {
+					/* 
+					 * Original language = "en", 
+					 * should now be "ENGLISH"
+					 */
+					assertThat(n, is("nh"));
+				}
+				else if (val.equals("green")) {
+					/* 
+					 * Original language = "fr", 
+					 * should be unchanged
+					 */
+					assertThat(n, is("ge"));
 				}
 			}
 		}

@@ -55,30 +55,6 @@ public class FLExImporterPropertiesTest {
 	}
 	
 	/**
-	 * Unit test for {@link FLExImporterProperties#shouldMapLangToNamespace()}
-	 * 
-	 */
-	@Test
-	public final void testShouldMapLanguageToNamespace() {
-		// Default is `true`
-		assertThat(fixture.shouldMapLangToNamespace(), is(true));
-		fixture.setPropertyValue(FLExImporterProperties.PROP_MAPLANGUAGETONAMESPACE, true);
-		assertThat(fixture.shouldMapLangToNamespace(), is(true));
-		fixture.setPropertyValue(FLExImporterProperties.PROP_MAPLANGUAGETONAMESPACE, false);
-		assertThat(fixture.shouldMapLangToNamespace(), is(false));
-		fixture.setPropertyValue(FLExImporterProperties.PROP_MAPLANGUAGETONAMESPACE, "carcosa");
-		assertThat(fixture.shouldMapLangToNamespace(), is(false));
-		fixture.setPropertyValue(FLExImporterProperties.PROP_MAPLANGUAGETONAMESPACE, 0);
-		assertThat(fixture.shouldMapLangToNamespace(), is(false));
-		fixture.setPropertyValue(FLExImporterProperties.PROP_MAPLANGUAGETONAMESPACE, "false");
-		assertThat(fixture.shouldMapLangToNamespace(), is(false));
-		fixture.setPropertyValue(FLExImporterProperties.PROP_MAPLANGUAGETONAMESPACE, 1);
-		assertThat(fixture.shouldMapLangToNamespace(), is(false));
-		fixture.setPropertyValue(FLExImporterProperties.PROP_MAPLANGUAGETONAMESPACE, "true");
-		assertThat(fixture.shouldMapLangToNamespace(), is(true));
-	}
-	
-	/**
 	 * @return the fixture
 	 */
 	public static final FLExImporterProperties getFixture() {
