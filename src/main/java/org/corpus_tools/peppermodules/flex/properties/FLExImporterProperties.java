@@ -35,7 +35,7 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	/**
 	 * 
 	 */
-	public static final String PROP_ANNOTATIONMAP = "typeMap";
+	public static final String PROP_TYPEMAP = "typeMap";
 	/**
 	 * 
 	 */
@@ -49,7 +49,7 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	addProperty(PepperModuleProperty.create().withName(PROP_LANGUAGEMAP).withType(String.class).withDescription(
 			"Map for changing FLEx 'lang' element values during conversion. Syntax: 'original-value=new-value,English=en")
 			.isRequired(false).build());
-	addProperty(PepperModuleProperty.create().withName(PROP_ANNOTATIONMAP).withType(String.class).withDescription(
+	addProperty(PepperModuleProperty.create().withName(PROP_TYPEMAP).withType(String.class).withDescription(
 			"Map for changing FLEx 'type' element values (i.e., annotation keys) during conversion. Syntax: 'original-value=new-value,gls=ge")
 			.isRequired(false).build());
 	}
@@ -60,8 +60,8 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	}
 
 	@SuppressWarnings("javadoc")
-	public Map<String, String> getAnnotationMap() {
-		return buildMap(getProperty(PROP_ANNOTATIONMAP));
+	public Map<String, String> getTypeMap() {
+		return buildMap(getProperty(PROP_TYPEMAP));
 	}
 
 	/**
@@ -77,16 +77,19 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	Map<String, String> buildMap(PepperModuleProperty<?> property) {
 		Map<String, String> map = new HashMap<>();
 		String mapString = (String) property.getValue();
-		String[] entryArray = mapString.split(",");
-		// Trim all entries
-		Set<String> trimmedEntries = new HashSet<>();
-		for (String entry : entryArray) {
-			trimmedEntries.add(entry.trim());
-		}
-		// Split entries at "=", and put in map with first as key and second as value
-		for (String entry : trimmedEntries) {
-			String[] splitEntry = entry.split(MAPPING_EQUAL_SYMBOL);
-			map.put(splitEntry[0].trim(), splitEntry[1].trim());
+		if (mapString != null) {
+			String[] entryArray = mapString.split(",");
+			// Trim all entries
+			Set<String> trimmedEntries = new HashSet<>();
+			for (String entry : entryArray) {
+				trimmedEntries.add(entry.trim());
+			}
+			// Split entries at "=", and put in map with first as key and second
+			// as value
+			for (String entry : trimmedEntries) {
+				String[] splitEntry = entry.split(MAPPING_EQUAL_SYMBOL);
+				map.put(splitEntry[0].trim(), splitEntry[1].trim());
+			}
 		}
 		return map;
 	}

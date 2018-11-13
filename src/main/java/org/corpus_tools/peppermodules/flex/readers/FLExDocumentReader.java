@@ -84,6 +84,9 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 	 * add other checks for elements when there can be items!
 	 */
 
+	/* (non-Javadoc)
+	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
+	 */
 	@Override
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		if (TAG_INTERLINEAR_TEXT.equals(qName)) {
@@ -95,13 +98,13 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				 * Use Salt API here as annotation is expected to be unique and
 				 * FLExReader API needs a node ID (which is null at this point).
 				 */
-				graph.getDocument().createAnnotation("interlinear-text", attributes.getQName(i), attributes.getValue(i));
+				graph.getDocument().createAnnotation(TAG_INTERLINEAR_TEXT, attributes.getQName(i), attributes.getValue(i));
 			}
 		}
 		else if (TAG_LANGUAGE.equals(qName)) {
 			itemParent = Element.LANGUAGE;
 			SAnnotation annotation = SaltFactory.createSAnnotation();
-			annotation.setNamespace("languages");
+			annotation.setNamespace(TAG_LANGUAGES);
 			annotation.setName(attributes.getValue(FLEX__LANG_ATTR));
 			annotation.setValue(FLEX_LANGUAGE__ENCODING_ATTR + "=" + attributes.getValue(FLEX_LANGUAGE__ENCODING_ATTR) + "," 
 					+ FLEX_LANGUAGE__VERNACULAR_ATTR + "=" + attributes.getValue(FLEX_LANGUAGE__VERNACULAR_ATTR) + ","
@@ -117,7 +120,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				 * Use Salt API here as annotation is expected to be unique and
 				 * FLExReader API needs a node ID (which is null at this point).
 				 */
-				span.createAnnotation("paragraph", attributes.getQName(i), attributes.getValue(i));
+				span.createAnnotation(TAG_PARAGRAPH, attributes.getQName(i), attributes.getValue(i));
 			}
 			paragraph = span;
 		}
@@ -132,7 +135,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				 * Use Salt API here as annotation is expected to be unique and
 				 * FLExReader API needs a node ID (which is null at this point).
 				 */
-				span.createAnnotation("phrase", attributes.getQName(i), attributes.getValue(i));
+				span.createAnnotation(TAG_PHRASE, attributes.getQName(i), attributes.getValue(i));
 			}
 			phrases.add(span);
 		}
@@ -149,9 +152,10 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				 * Use Salt API here as annotation is expected to be unique and
 				 * FLExReader API needs a node ID (which is null at this point).
 				 */
-				token.createAnnotation("word", attributes.getQName(i), attributes.getValue(i));
+				token.createAnnotation(TAG_WORD, attributes.getQName(i), attributes.getValue(i));
 			}
 			words.add(token);
+			graph.getLayerByName(TOKEN_LAYER_LEXICAL).get(0).addNode(token);
 		}
 		else if (TAG_MORPHEMES.equals(qName)) {
 			wordHasMorphemes = true;
@@ -165,9 +169,10 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				 * Use Salt API here as annotation is expected to be unique and
 				 * FLExReader API needs a node ID (which is null at this point).
 				 */
-				token.createAnnotation("morpheme", attributes.getQName(i), attributes.getValue(i));
+				token.createAnnotation(TAG_MORPH, attributes.getQName(i), attributes.getValue(i));
 			}
 			morphemes.add(token);
+			graph.getLayerByName(TOKEN_LAYER_MORPHOLOGICAL).get(0).addNode(token);
 		}
 		else if (TAG_ITEM.equals(qName)) {
 			isItemActiveElement = true;
@@ -221,6 +226,9 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.xml.sax.helpers.DefaultHandler#characters(char[], int, int)
+	 */
 	@Override
 	public void characters(char[] ch, int start, int length) throws SAXException {
 		if (isItemActiveElement) {
@@ -253,23 +261,27 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.xml.sax.helpers.DefaultHandler#endElement(java.lang.String, java.lang.String, java.lang.String)
+	 */
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		if (TAG_INTERLINEAR_TEXT.equals(qName)) {
+			// Add all FLEx 'languages' annotations
 			for (SAnnotation language : languages) {
 				graph.getDocument().addAnnotation(language);
 			}
 			Iterator<Map<String, String>> rowIterator = interlinearTextItems.rowMap().values().iterator();
 			while (rowIterator.hasNext()) {
 				Map<String, String> row = rowIterator.next();
-				graph.getDocument().createAnnotation(row.get(FLEX__LANG_ATTR), "interlinear-text_" + row.get(FLEX__TYPE_ATTR),
+				createLanguagedAnnotation(graph.getDocument(), row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR),
 						row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
 			}
 		}
 		else if (TAG_PARAGRAPH.equals(qName)) {
 			SSpan span = paragraph;
 			graph.addNode(span);
-			createAnnotation(span, "paragraph", "seqnum", Integer.toString(++paragraphCount));
+			createAnnotation(span, TAG_PARAGRAPH, TAG_SEQNUM, Integer.toString(++paragraphCount));
 			for (SSpan phrase : phrases) {
 				for (SToken token : graph.getOverlappedTokens(phrase)) {
 					SSpanningRelation spanRel = SaltFactory.createSSpanningRelation();
@@ -278,7 +290,6 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 					graph.addRelation(spanRel);
 				}
 			}
-			graph.getLayerByName("paragraphs").get(0).addNode(span);
 		}
 		else if (TAG_PHRASE.equals(qName)) {
 			SSpan span = phrases.lastElement();
@@ -286,8 +297,9 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 			graph.addNode(span);
 			while (rowIterator.hasNext()) {
 				Map<String, String> row = rowIterator.next();
-				createLanguagedAnnotation(span, row.get(FLEX__LANG_ATTR), "phrase_" + row.get(FLEX__TYPE_ATTR),
+				createLanguagedAnnotation(span, row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR),
 						row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+				graph.getLayerByName(ITEM_LAYER_PHRASE).get(0).addNode(span);
 			}
 
 			for (SToken word : words) {
@@ -302,7 +314,6 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				spanRel.setTarget(morpheme);
 				graph.addRelation(spanRel);
 			}
-			graph.getLayerByName("phrases").get(0).addNode(span);
 
 		}
 		else if (TAG_WORD.equals(qName)) {
@@ -319,8 +330,9 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				if (type.equals(FLEX_ITEM_TYPE__TXT) || type.equals(FLEX_ITEM_TYPE__PUNCT)) {
 					tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 				}
-				createLanguagedAnnotation(token, row.get(FLEX__LANG_ATTR), "word_" + row.get(FLEX__TYPE_ATTR),
+				createLanguagedAnnotation(token, row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR),
 						row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+				graph.getLayerByName(ITEM_LAYER_WORD).get(0).addNode(token);
 			}
 			String oldText = wordDS.getText();
 			int oldTextLength = oldText.length();
@@ -345,7 +357,6 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 			timeLineRel.setStart(wordTimelineStart);
 			timeLineRel.setEnd(wordTimelineStart + wordLength);
 			graph.addRelation(timeLineRel);
-			graph.getLayerByName("words").get(0).addNode(token);
 		}
 		else if (TAG_MORPH.equals(qName)) {
 			STimeline timeline = graph.getTimeline();
@@ -361,8 +372,9 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 					tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 				}
 				else {
-					createLanguagedAnnotation(token, row.get(FLEX__LANG_ATTR), "morph_" + row.get(FLEX__TYPE_ATTR),
+					createLanguagedAnnotation(token, row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR),
 							row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+					graph.getLayerByName(ITEM_LAYER_MORPH).get(0).addNode(token);
 				}
 			}
 			// Empty element content *can* occur
@@ -394,7 +406,6 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 			timeLineRel.setStart(timelineEnd);
 			timeLineRel.setEnd(timelineEnd += timeSteps);
 			graph.addRelation(timeLineRel);
-			graph.getLayerByName("morphemes").get(0).addNode(token);
 		}
 		else if (TAG_ITEM.equals(qName)) {
 			isItemActiveElement = false;

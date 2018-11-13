@@ -1,6 +1,7 @@
 package org.corpus_tools.peppermodules.flex;
 
 import org.corpus_tools.peppermodules.flex.FLExImporter;
+import org.corpus_tools.peppermodules.flex.model.FLExText;
 import org.corpus_tools.peppermodules.flex.properties.FLExImporterProperties;
 import org.corpus_tools.salt.common.SDocumentGraph;
 import org.corpus_tools.salt.common.STimelineRelation;
@@ -23,7 +24,9 @@ import java.util.List;
 import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import org.corpus_tools.pepper.common.CorpusDesc;
 import org.corpus_tools.pepper.common.FormatDesc;
@@ -88,8 +91,8 @@ public class FLExImporterTest extends PepperImporterTest {
 		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
 				.getDocumentGraph();
 		assertNotNull(graph);
-		SLayer wordLayer = graph.getLayerByName("words").get(0);
-		SLayer morphLayer = graph.getLayerByName("morphemes").get(0);
+		SLayer wordLayer = graph.getLayerByName(FLExText.TOKEN_LAYER_LEXICAL).get(0);
+		SLayer morphLayer = graph.getLayerByName(FLExText.TOKEN_LAYER_MORPHOLOGICAL).get(0);
 		assertNotNull(wordLayer);
 		assertNotNull(morphLayer);
 		List<SToken> wordtokens = new ArrayList<>();
@@ -245,46 +248,45 @@ public class FLExImporterTest extends PepperImporterTest {
 	}
 	
 	/**
-	 * Tests whether languages are correctly changed
-	 * during the conversion process, with a full
-	 * language set.
+	 * Tests whether annotations are correctly
+	 * added to layers during the conversion phase.
 	 */
 	@Test
-	public void testTypeMapping() {
+	public void testLayerMapping() {
 		setTestFile("short-sample.flextext");
-		setProperties("properties/type-map.properties");
 		start();
 		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
 				.getDocumentGraph();
 		assertNotNull(graph);
+		// FLEx level: interlinear-text
+		assertThat(graph.getDocument().getAnnotation("en", "title"), notNullValue());
+		assertThat(graph.getDocument().getAnnotation("en", "title").getValue_STEXT(), is("Short sample"));
+		assertThat(graph.getDocument().getAnnotation("en", "comment"), notNullValue());
+		assertThat(graph.getDocument().getAnnotation("en", "comment").getValue_STEXT(), is("This is a short sample for text purposes."));
+		// Other FLEx levels
 		for (SNode node : graph.getNodes()) {
 			for (SAnnotation a : node.getAnnotations()) {
-				/* 
-				 * Nothing else defined in the properties,
-				 * hence languages should be mapped to namespaces.
-				 */
 				String val = a.getValue_STEXT();
-				String ns = a.getNamespace();
-				if (val.equals("pus")) {
+				SLayer phraseLayer = graph.getLayerByName(FLExText.ITEM_LAYER_PHRASE).get(0);
+				SLayer wordLayer = graph.getLayerByName(FLExText.ITEM_LAYER_WORD).get(0);
+				SLayer morphLayer = graph.getLayerByName(FLExText.ITEM_LAYER_MORPH).get(0);
+				if (val.equals("french-example")) {
 					/* 
-					 * Original language = "qaa-x-kal", 
-					 * should now be "something"
+					 * Level: phrase
 					 */
-					assertThat(ns, is("something"));
+					assertTrue(phraseLayer.getNodes().contains(a.getContainer()));
 				}
-				else if (val.equals("green")) {
+				else if (val.equals("green-word")) {
 					/* 
-					 * Original language = "en", 
-					 * should now be "ENGLISH"
+					 * Level: word
 					 */
-					assertThat(ns, is("ENGLISH"));
+					assertTrue(wordLayer.getNodes().contains(a.getContainer()));
 				}
-				else if (val.equals("french-example")) {
+				else if (val.equals("adj")) {
 					/* 
-					 * Original language = "fr", 
-					 * should now be "FRENCH?"
+					 * Level: morph
 					 */
-					assertThat(ns, is("FRENCH?"));
+					assertTrue(morphLayer.getNodes().contains(a.getContainer()));
 				}
 			}
 		}
@@ -296,46 +298,41 @@ public class FLExImporterTest extends PepperImporterTest {
 	 * language set (`fr` is not mapped).
 	 */
 	@Test
-	public void testIncompleteTypeMapping() {
+	public void testTypeMapping() {
 		setTestFile("short-sample.flextext");
-		setProperties("properties/incomplete-type-map.properties");
+		setProperties("properties/type-map.properties");
 		start();
 		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
 				.getDocumentGraph();
 		assertNotNull(graph);
+		/* 
+		 * Check that types have been mapped according to
+		 * type-map.properties 
+		 */
 		for (SNode node : graph.getNodes()) {
 			for (SAnnotation a : node.getAnnotations()) {
-				/* 
-				 * Nothing else defined in the properties,
-				 * hence types should be mapped to names.
-				 */
 				String val = a.getValue_STEXT();
-				String n = a.getName();
 				if (val.equals("pus")) {
-					/* 
-					 * Original types = "txt", "cf", 
-					 * should now be "tx"/"cf"
-					 */
-					assertThat(n, anyOf(is("tx"), is("cf")));
+					assertThat(a.getName(), is("tx"));
 				}
-				else if (val.equals("1")) {
-					/* 
-					 * Original language = "en", 
-					 * should now be "ENGLISH"
-					 */
-					assertThat(n, is("nh"));
+				else if (val.equals("pusword")) {
+					assertThat(a.getName(), is("tx"));
+				}
+				else if (val.equals("puscf")) {
+					assertThat(a.getName(), is("cf"));
+				}
+				else if (val.equals("1hn")) {
+					assertThat(a.getName(), is("nh"));
 				}
 				else if (val.equals("green")) {
-					/* 
-					 * Original language = "fr", 
-					 * should be unchanged
-					 */
-					assertThat(n, is("ge"));
+					assertThat(a.getName(), is("ge"));
+				}
+				else if (val.equals("adj")) {
+					assertThat(a.getName(), is("ms"));
 				}
 			}
 		}
 	}
-
 
 	private void setProperties(String fileName) {
 		FLExImporterProperties properties = new FLExImporterProperties();

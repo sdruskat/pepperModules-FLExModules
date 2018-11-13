@@ -3,13 +3,14 @@
  */
 package org.corpus_tools.peppermodules.flex.readers;
 
-import java.util.HashMap;
+import java.util.HashMap; 
 import java.util.Map;
 
 import org.corpus_tools.pepper.modules.PepperModuleProperties;
 import org.corpus_tools.peppermodules.flex.model.FLExText;
 import org.corpus_tools.peppermodules.flex.properties.FLExImporterProperties;
 import org.corpus_tools.salt.common.SDocument;
+import org.corpus_tools.salt.core.SAbstractAnnotation;
 import org.corpus_tools.salt.core.SMetaAnnotation;
 import org.corpus_tools.salt.core.SNode;
 import org.xml.sax.ext.DefaultHandler2;
@@ -79,7 +80,7 @@ public class FLExReader extends DefaultHandler2 implements FLExText {
 	 * @param name
 	 * @param value
 	 */
-	protected void createLanguagedAnnotation(SNode node, String languageString, String name, String value) {
+	protected SAbstractAnnotation createLanguagedAnnotation(SNode node, String languageString, String name, String value) {
 		/* 
 		 * Check if we have properties of type
 		 * FLExImporterProperties attached
@@ -90,8 +91,7 @@ public class FLExReader extends DefaultHandler2 implements FLExText {
 		}
 		// In case no properties have been attached, forward and return
 		else {
-			createAnnotation(node, languageString, name, value, false);
-			return;
+			return createAnnotation(node, languageString, name, value, false);
 		}
 		// From here we can assume we have FLExImporterProperties
 		Map<String, String> languageMap = flexImporterProperties.getLanguageMap();
@@ -101,7 +101,7 @@ public class FLExReader extends DefaultHandler2 implements FLExText {
 				languageString = newLanguageString;
 			}
 		}
-		createAnnotation(node, languageString, name, value, false);
+		return createAnnotation(node, languageString, name, value, false);
 	}
 	/**
 	 * Handles failsafe creation of (meta) annotations by checking against a map
@@ -117,8 +117,15 @@ public class FLExReader extends DefaultHandler2 implements FLExText {
 	 * @param value The value of the annotation to crete
 	 * @param isMeta Whether the annotation to create should be of type {@link SMetaAnnotation}
 	 */
-	private void createAnnotation(SNode node, String namespace, String name, String value, boolean isMeta) {
-		// Check properties first
+	private SAbstractAnnotation createAnnotation(SNode node, String namespace, String name, String value, boolean isMeta) {
+		// Do we need to change the annotation name?
+		String newName = null;
+		if (properties instanceof FLExImporterProperties) {
+			newName = ((FLExImporterProperties) properties).getTypeMap().get(name);
+			if (newName != null) {
+				name = newName;
+			}
+		}
 		String pattern = node.getId() + PROCESSING__KEY_VALUE_SEPARATOR + namespace
 				+ PROCESSING__KEY_VALUE_SEPARATOR + name;
 		if (multipleAnnoMap.containsKey(pattern)) {
@@ -126,16 +133,16 @@ public class FLExReader extends DefaultHandler2 implements FLExText {
 			count++;
 			multipleAnnoMap.put(pattern, count);
 			if (isMeta) {
-				node.createMetaAnnotation(namespace, name + PROCESSING__UNDERSCORE + count.toString(), value);
+				return node.createMetaAnnotation(namespace, name + PROCESSING__UNDERSCORE + count.toString(), value);
 			} else {
-				node.createAnnotation(namespace, name + PROCESSING__UNDERSCORE + count.toString(), value);
+				return node.createAnnotation(namespace, name + PROCESSING__UNDERSCORE + count.toString(), value);
 			}
 		} else {
 			multipleAnnoMap.put(pattern, 1);
 			if (isMeta)
-				node.createMetaAnnotation(namespace, name, value);
+				return node.createMetaAnnotation(namespace, name, value);
 			else {
-				node.createAnnotation(namespace, name, value);
+				return node.createAnnotation(namespace, name, value);
 			}
 		}
 	}

@@ -42,12 +42,12 @@ public class FLExImporterPropertiesTest {
 	}
 	
 	/**
-	 * Unit test for {@link FLExImporterProperties#getAnnotationMap()}.
+	 * Unit test for {@link FLExImporterProperties#getTypeMap()}.
 	 */
 	@Test
 	public final void testGetAnnotationMap() {
-		fixture.setPropertyValue(FLExImporterProperties.PROP_ANNOTATIONMAP, " KEY_1 = ke, key-2=k2, key value with space =kv ");
-		Map<String, String> map = fixture.getAnnotationMap();
+		fixture.setPropertyValue(FLExImporterProperties.PROP_TYPEMAP, " KEY_1 = ke, key-2=k2, key value with space =kv ");
+		Map<String, String> map = fixture.getTypeMap();
 		assertThat(map.size(), is(3));
 		assertThat(map.get("KEY_1"), is("ke"));
 		assertThat(map.get("key-2"), is("k2"));

@@ -16,6 +16,7 @@ import javax.xml.validation.Validator;
 import org.corpus_tools.pepper.common.DOCUMENT_STATUS;
 import org.corpus_tools.pepper.impl.PepperMapperImpl;
 import org.corpus_tools.peppermodules.flex.exceptions.DocumentSAXParseFinishedEvent;
+import org.corpus_tools.peppermodules.flex.model.FLExText;
 import org.corpus_tools.peppermodules.flex.readers.FLExDocumentReader;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocumentGraph;
@@ -62,10 +63,11 @@ public class FLExMapper extends PepperMapperImpl {
 		SDocumentGraph graph = getDocument().getDocumentGraph();
 		// Graph set up
 		graph.createTimeline();
-		graph.addLayer(getLayer("paragraphs"));
-		graph.addLayer(getLayer("phrases"));
-		graph.addLayer(getLayer("words"));
-		graph.addLayer(getLayer("morphemes"));
+		graph.addLayer(getLayer(FLExText.ITEM_LAYER_PHRASE));
+		graph.addLayer(getLayer(FLExText.ITEM_LAYER_WORD));
+		graph.addLayer(getLayer(FLExText.ITEM_LAYER_MORPH));
+		graph.addLayer(getLayer(FLExText.TOKEN_LAYER_LEXICAL));
+		graph.addLayer(getLayer(FLExText.TOKEN_LAYER_MORPHOLOGICAL));
 		
 		// Read document
 		FLExDocumentReader reader = new FLExDocumentReader(getDocument(), getProperties());
