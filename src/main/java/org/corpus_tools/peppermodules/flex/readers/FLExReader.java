@@ -22,7 +22,7 @@ import org.xml.sax.ext.DefaultHandler2;
  * and meta annotations from FLEx 'lang' and 'type' 
  * elements and he respective values.
  */
-public class FLExReader extends DefaultHandler2 implements FLExText {
+class FLExReader extends DefaultHandler2 implements FLExText {
 	
 	/**
 	 * 
@@ -36,24 +36,10 @@ public class FLExReader extends DefaultHandler2 implements FLExText {
 	 * 
 	 * @param properties
 	 */
-	public FLExReader(PepperModuleProperties properties) {
+	FLExReader(PepperModuleProperties properties) {
 		this.properties = properties;
 	}
 
-	/**
-	 * Forwards to
-	 * {@link #createAnnotation(SDocument, String, String, String, boolean)}
-	 * with the `isMeta` argument set to `true`.
-	 * 
-	 * @param doc
-	 * @param namespace
-	 * @param name
-	 * @param value
-	 */
-	protected void createMetaAnnotation(SNode node, String namespace, String name, String value) {
-		createAnnotation(node, namespace, name, value, true);
-	}
-	
 	/**
 	 * Forwards to
 	 * {@link #createAnnotation(SDocument, String, String, String, boolean)}

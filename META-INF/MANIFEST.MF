@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1542116948578
+Bnd-LastModified: 1542185495185
 Build-Jdk: 1.8.0_181
 Built-By: stephan
 Bundle-Description: Provides shared POM-data.
@@ -18,11 +18,10 @@ Export-Package: org.corpus_tools.peppermodules.flex;uses:="org.corpus_to
  n="1.0.0.SNAPSHOT",org.corpus_tools.peppermodules.flex.model;version="1
  .0.0.SNAPSHOT",org.corpus_tools.peppermodules.flex.readers;uses:="org.c
  orpus_tools.pepper.modules,org.corpus_tools.peppermodules.flex.model,or
- g.corpus_tools.salt.common,org.corpus_tools.salt.core,org.xml.sax,org.x
- ml.sax.ext";version="1.0.0.SNAPSHOT",org.corpus_tools.peppermodules.fle
- x.properties;uses:="org.corpus_tools.pepper.modules";version="1.0.0.SNA
- PSHOT",org.corpus_tools.peppermodules.flex.exceptions;uses:="org.xml.sa
- x";version="1.0.0.SNAPSHOT"
+ g.corpus_tools.salt.common,org.xml.sax";version="1.0.0.SNAPSHOT",org.co
+ rpus_tools.peppermodules.flex.properties;uses:="org.corpus_tools.pepper
+ .modules";version="1.0.0.SNAPSHOT",org.corpus_tools.peppermodules.flex.
+ exceptions;uses:="org.xml.sax";version="1.0.0.SNAPSHOT"
 Import-Package: com.google.common.collect;version="[19.0,20)",javax.xml.
  transform,javax.xml.transform.stream,javax.xml.validation,org.corpus_to
  ols.pepper.common;version="[3.1,4)",org.corpus_tools.pepper.impl;versio

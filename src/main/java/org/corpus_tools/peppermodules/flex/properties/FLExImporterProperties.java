@@ -31,15 +31,14 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	 * A map with original language strings and the target strings
 	 * the original should be changed to during conversion.
 	 */
-	public static final String PROP_LANGUAGEMAP = "languageMap";
+	static final String PROP_LANGUAGEMAP = "languageMap";
 	/**
 	 * 
 	 */
-	public static final String PROP_TYPEMAP = "typeMap";
+	static final String PROP_TYPEMAP = "typeMap";
 	/**
 	 * 
 	 */
-	public static final String PROP_MAPPINGPATTERN = "mappingPattern";
 	private static final String MAPPING_EQUAL_SYMBOL = "=";
 	
 	/**
@@ -74,7 +73,7 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	 * @param property The property whose value is being mapped
 	 * @return a {@link Map} representation of the argument
 	 */
-	Map<String, String> buildMap(PepperModuleProperty<?> property) {
+	private Map<String, String> buildMap(PepperModuleProperty<?> property) {
 		Map<String, String> map = new HashMap<>();
 		String mapString = (String) property.getValue();
 		if (mapString != null) {

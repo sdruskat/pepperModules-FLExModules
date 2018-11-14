@@ -3,7 +3,7 @@
  */
 package org.corpus_tools.peppermodules.flex;
 
-import java.io.File;
+import java.io.File; 
 import java.io.IOException;
 import java.net.URL;
 
@@ -15,7 +15,6 @@ import javax.xml.validation.Validator;
 
 import org.corpus_tools.pepper.common.DOCUMENT_STATUS;
 import org.corpus_tools.pepper.impl.PepperMapperImpl;
-import org.corpus_tools.peppermodules.flex.exceptions.DocumentSAXParseFinishedEvent;
 import org.corpus_tools.peppermodules.flex.model.FLExText;
 import org.corpus_tools.peppermodules.flex.readers.FLExDocumentReader;
 import org.corpus_tools.salt.SaltFactory;
@@ -31,14 +30,8 @@ import org.xml.sax.SAXException;
  * @author Stephan Druskat <mail@sdruskat.net>
  *
  */
-public class FLExMapper extends PepperMapperImpl {
+class FLExMapper extends PepperMapperImpl {
 	
-	// FEFF because this is the Unicode char represented by the UTF-8 byte order mark (BOM, EF BB BF).
-    /**
-     * Unicode representation of the UTF-8 byte order mark.
-     */
-    public static final String UTF8_BOM = "\uFEFF";
-
 	private static final Logger logger = LoggerFactory.getLogger(FLExMapper.class);
 	
 	@Override
@@ -75,13 +68,8 @@ public class FLExMapper extends PepperMapperImpl {
 			this.readXMLResource(reader, getResourceURI());
 		}
 		catch (Exception e) {
-			if (e.getCause() instanceof DocumentSAXParseFinishedEvent) {
-				logger.info(e.getCause().getMessage());
-			}
-			else {
-				logger.error("An error occurred while reading the file '{}'.", getResourceURI().path(), e);
-				return DOCUMENT_STATUS.FAILED;
-			}
+			logger.error("An error occurred while reading the file '{}'.", getResourceURI().path(), e);
+			return DOCUMENT_STATUS.FAILED;
 		}
 		return DOCUMENT_STATUS.COMPLETED;
 	}
