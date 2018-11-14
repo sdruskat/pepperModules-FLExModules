@@ -1,5 +1,7 @@
 # FLExText Modules for the Pepper conversion framework for linguistic data
 
+[![Build Status](https://travis-ci.org/sdruskat/pepperModules-FLExModules.svg?branch=develop)](https://travis-ci.org/sdruskat/pepperModules-FLExModules) [![Coverage Status](https://coveralls.io/repos/github/sdruskat/pepperModules-FLExModules/badge.svg?branch=develop)](https://coveralls.io/github/sdruskat/pepperModules-FLExModules?branch=develop)
+
 ## How to cite
 
 TBA
