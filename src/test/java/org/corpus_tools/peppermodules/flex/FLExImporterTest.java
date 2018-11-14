@@ -141,7 +141,7 @@ public class FLExImporterTest extends PepperImporterTest {
 			}
 		}
 		SaltProject project = getFixture().getSaltProject();
-		project.saveSaltProject(URI.createFileURI("/home/stephan/tmp/flextest/saltproject/"));
+		project.saveSaltProject(URI.createFileURI(System.getProperty("java.io.tmpdir") + "/flextest/saltproject/"));
 	}
 
 	private String getFile(String fileName) {
