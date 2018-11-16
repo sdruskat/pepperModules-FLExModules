@@ -9,57 +9,63 @@ import org.corpus_tools.salt.core.SAnnotation;
  * This interface is a dictionary for files following the model of FLExText.
  * 
  * The FLExText model has the following structure, according to
- * [FlexInterlinear.xsd](/resources/FlexInterlinear.xsd): (! = required, ? =
- * optional, () = fixed)
+ * [FlexInterlinear.xsd](/resources/FlexInterlinear.xsd):  
+ * (! = required, ? = optional, () = fixed)
  * 
- * - `document` 
- * - `interlinear-text` 1..* 
- * - `item` 0..1 
- * - `paragraphs` 1..1 
- * - `paragraph` 0..* 
- * - `phrases` 1..1 
- * - `phrase` 0..* 
- * - `item` 0..* 
- * - `words` 1..1 
- * - `scrMilestone` 0..* 
- * - `word` 0..* 
- * - `item` 0..* 
- * - `morphemes` 0..1 
- * - `morph` 0..* 
- * - `item` 0..* 
- * - `item` 0..* (Order seems to be important here!)
- * - `languages` 0..1 
- * - `language` 0..* 
- * - `media-files` 0..* 
- * - `media` 0..* 
+ * - `document`
+ * 	- `interlinear-text` 1..*
+ * 		- `item` 0..1
+ * 		- `paragraphs` 1..1
+ * 			- `paragraph` 0..*
+ * 				- `phrases` 1..1
+ * 					- `phrase` 0..*
+ * 						- `item` 0..*
+ * 						- `words` 1..1
+ * 							- `scrMilestone` 0..*
+ *							- `word` 0..*
+ * 								- `item` 0..*
+ * 								- `morphemes` 0..1
+ * 									- `morph` 0..*
+ * 										- `item` 0..*
+ * 						- `item` 0..* (Order seems to be important here!)
+ * 		- `languages` 0..1
+ * 			- `language` 0..*
+ * 		- `media-files` 0..*
+ * 			- `media` 0..*
  * - `item` (non-nillable)
  *
  * The resulting Salt model will look like the following
  * 
  * ```
  * +---------------------------------------------------------------------------------------------+
- * | SCorpus document |
+ * | SCorpus document                                                                            |
  * +---------------------------------------------------------------------------------------+-----+
- * | SDocument interlinear-text | | | annotations: | ... | | item
- * "type"_"lang":value | |
+ * | SDocument interlinear-text                                                            |     |
+ * |     annotations:                                                                      | ... |
+ * |         item "type"_"lang":value                                                      |     |
  * +---------------------------------------------------------------------------------+-----+-----+
- * | SSpan phrase "item 'segnum'" | | | annotations: | ... | | item
- * "type"_"lang":value | |
+ * | SSpan phrase "item 'segnum'"                                                    |     |
+ * |     annotations:                                                                | ... |    
+ * |         item "type"_"lang":value                                                |     |
  * +---------------------------------------------------------------------------+-----+-----+
- * | SToken word | | | annotations: | ... | | item "type"_"lang":value | |
+ * | SToken word                                                               |     |
+ * |     annotations:                                                          | ... |
+ * |         item "type"_"lang":value                                          |     |
  * +-↓-↓-↓---------------------------------------------------------------------+-↓-↓-+-----------+
- * | STimeline timeline | | [Ties together "word" tokens (above) and "morph"
- * tokens (below) | | to interlinearize on the real data source] |
+ * | STimeline timeline                                                                          |
+ * |     [Ties together "word" tokens (above) and "morph" tokens (below)                         |
+ * |      to interlinearize on the real data source]                                             |
  * +-↑-↑-↑------------------------------↑-↑-↑----------------------------+-↑-↑-+-----------------+
- * | SToken morph | SToken morph | | | annotations: | annotations: | ... | |
- * item "type"_"lang":value | item "type"_"lang":value | |
+ * | SToken morph                     | SToken morph                     |     |
+ * |     annotations:                 |     annotations:                 | ... |
+ * |         item "type"_"lang":value |         item "type"_"lang":value |     |
  * +----------------------------------+----------------------------------+-----+-----------------+
- * | STextualDS "word" (compiled from word > item type="text") |
+ * | STextualDS "word" (compiled from word > item type="text")                                   |
  * +---------------------------------------------------------------------------------------------+
- * | STextualDS "morph" (compiled from morph > item type="text") |
+ * | STextualDS "morph" (compiled from morph > item type="text")                                 |
  * +---------------------------------------------------------------------------------------------+
  * ```
- *
+ * 
  * ## Salt mapping
  * 
  * 'item' elements, i.e., linguistically relevant annotations, are mapped onto
@@ -79,7 +85,10 @@ import org.corpus_tools.salt.core.SAnnotation;
  * elements, i.e., linguistically relevant annotations. They are (bottom to
  * top):
  * 
- * - `morph` - `word` - `phrase` - `interlinear-text`
+ * - `morph` 
+ * - `word` 
+ * - `phrase` 
+ * - `interlinear-text`
  * 
  * 'item' elements on the `interlinear-text` level cannot be mapped to
  * annotations whose container (an {@link SDocument}) cannot be added to its

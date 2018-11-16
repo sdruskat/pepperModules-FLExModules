@@ -28,9 +28,14 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 
 /**
- * This class parses an xml file following the model of
+ * This class parses an xml file following the model of {@link FLExText}.
+ * 
+ * In the process, the FLEx XML values are mapped onto a *Salt* model
+ * following these principles:
+ * 
+ * TODO Complete from here
  *
- * @author XMLTagExtractor
+ * @author Stephan Druskat <mail@sdruskat.net>
  **/
 public class FLExDocumentReader extends FLExReader implements FLExText {
 

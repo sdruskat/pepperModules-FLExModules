@@ -28,16 +28,18 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	 */
 	private static final long serialVersionUID = 1L;
 	/**
-	 * A map with original language strings and the target strings
+	 * A map with original 'lang' strings and the target strings
 	 * the original should be changed to during conversion.
 	 */
 	static final String PROP_LANGUAGEMAP = "languageMap";
 	/**
-	 * 
+	 * A map with original 'type' strings and the target strings
+	 * the original should be changed to during conversion.
 	 */
 	static final String PROP_TYPEMAP = "typeMap";
 	/**
-	 * 
+	 * A constant for the the mapping symbol in
+	 * {@link #PROP_LANGUAGEMAP} and {@link #PROP_TYPEMAP}.
 	 */
 	private static final String MAPPING_EQUAL_SYMBOL = "=";
 	
