@@ -79,11 +79,6 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 		wordDS.setName("lexical-data");
 	}
 
-	/*
-	 * FIXME Remove checks for activeElement when filling activeItems or rather,
-	 * add other checks for elements when there can be items!
-	 */
-
 	/* (non-Javadoc)
 	 * @see org.xml.sax.helpers.DefaultHandler#startElement(java.lang.String, java.lang.String, java.lang.String, org.xml.sax.Attributes)
 	 */
@@ -379,12 +374,7 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 			}
 			// Empty element content *can* occur
 			if (tokenText == null || tokenText.length() == 0) {
-				/*
-				 * FIXME Once ANNISExporter has been fixed to allow the string
-				 * "NULL" on import (i.e., escapes "NULL" in the database),
-				 * change this to tokenText = "NULL"
-				 */
-				tokenText = "NULL";
+				tokenText = "\u004eULL"; // Unicode 'N' + ULL
 			}
 			String oldText = morphDS.getText();
 			int oldTextLength = oldText.length();
