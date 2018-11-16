@@ -1,6 +1,8 @@
 package org.corpus_tools.peppermodules.flex.model;
 
 import org.corpus_tools.salt.common.SDocument;
+import org.corpus_tools.salt.common.SSpan;
+import org.corpus_tools.salt.common.SToken;
 import org.corpus_tools.salt.core.SAnnotation;
 
 /**
@@ -10,12 +12,27 @@ import org.corpus_tools.salt.core.SAnnotation;
  * [FlexInterlinear.xsd](/resources/FlexInterlinear.xsd): (! = required, ? =
  * optional, () = fixed)
  * 
- * - `document` - `interlinear-text` 1..* - `item` 0..1 - `paragraphs` 1..1 -
- * `paragraph` 0..* - `phrases` 1..1 - `phrase` 0..* - `item` 0..* - `words`
- * 1..1 - `scrMilestone` 0..* - `word` 0..* - `item` 0..* - `morphemes` 0..1 -
- * `morph` 0..* - `item` 0..* - `item` 0..* (Order seems to be important here!)
- * - `languages` 0..1 - `language` 0..* - `media-files` 0..* - `media` 0..* -
- * `item` (non-nillable)
+ * - `document` 
+ * - `interlinear-text` 1..* 
+ * - `item` 0..1 
+ * - `paragraphs` 1..1 
+ * - `paragraph` 0..* 
+ * - `phrases` 1..1 
+ * - `phrase` 0..* 
+ * - `item` 0..* 
+ * - `words` 1..1 
+ * - `scrMilestone` 0..* 
+ * - `word` 0..* 
+ * - `item` 0..* 
+ * - `morphemes` 0..1 
+ * - `morph` 0..* 
+ * - `item` 0..* 
+ * - `item` 0..* (Order seems to be important here!)
+ * - `languages` 0..1 
+ * - `language` 0..* 
+ * - `media-files` 0..* 
+ * - `media` 0..* 
+ * - `item` (non-nillable)
  *
  * The resulting Salt model will look like the following
  * 
@@ -83,30 +100,35 @@ import org.corpus_tools.salt.core.SAnnotation;
 public interface FLExText {
 
 	/**
-	 * TODO
+	 * A constant for the name of the layer that includes
+	 * the morphological {@link SToken}s.
 	 */
 	public static final String ITEM_LAYER_MORPH = "morph";
 	/**
-	 * TODO
+	 * A constant for the name of the layer that includes
+	 * the lexical {@link SToken}s.
 	 */
 	public static final String ITEM_LAYER_WORD = "word";
 	/**
-	 * TODO
+	 * A constant for the name of the layer that includes
+	 * the phrase segmentation {@link SSpan}s.
 	 */
 	public static final String ITEM_LAYER_PHRASE = "phrase";
 	/**
-	 * 
+	 * A constant for the name of the layer that includes
+	 * the lexical data nodes, used for processing data source.
 	 */
 	public static final String TOKEN_LAYER_LEXICAL = "lexical-data";
 	/**
-	 * 
+	 * A constant for the name of the layer that includes
+	 * the morphological data nodes, used for processing data source.
 	 */
 	public static final String TOKEN_LAYER_MORPHOLOGICAL = "morphological-data";
 
 	/**
 	 * Constant to address the xml-element `paragraph`.
 	 * 
-	 * `paragraph`s are TODO.
+	 * `paragraph`s are the top level segments in a document.
 	 */
 	public static final String TAG_PARAGRAPH = "paragraph";
 	/**
@@ -124,19 +146,18 @@ public interface FLExText {
 	public static final String TAG_LANGUAGES = "languages";
 
 	/**
-	 * TODO
+	 * A constant for the name of the annotation
+	 * recording sequential numbering of segments.
 	 */
 	public static final String TAG_SEQNUM = "seqnum";
 	/**
 	 * Constant to address the xml-element `words`.
 	 * 
-	 * This corresponds to the Salt element ``.
+	 * `words` is a container for `word` elements.
 	 */
 	public static final String TAG_WORDS = "words";
 	/**
 	 * Constant to address the xml-element `language`.
-	 * 
-	 * This corresponds to the Salt element ``.
 	 */
 	public static final String TAG_LANGUAGE = "language";
 
@@ -159,40 +180,68 @@ public interface FLExText {
 	public static final String TAG_INTERLINEAR_TEXT = "interlinear-text";
 	/**
 	 * Constant to address the xml-element `phrase`.
-	 * 
-	 * This corresponds to the Salt element ``.
 	 */
 	public static final String TAG_PHRASE = "phrase";
 
 	/**
 	 * Constant to address the xml-element `morph`.
-	 * 
-	 * This corresponds to the Salt element ``.
 	 */
 	public static final String TAG_MORPH = "morph";
 	/**
 	 * Constant to address the xml-element `word`.
-	 * 
-	 * This corresponds to the Salt element ``.
 	 */
 	public static final String TAG_WORD = "word";
 
+	/**
+	 * Constant for the 'type' attribute in 'item' elements.
+	 */
 	public static final String FLEX__TYPE_ATTR = "type";
+	/**
+	 * Constant for the 'lang' attribute in 'item' elements.
+	 */
 	public static final String FLEX__LANG_ATTR = "lang";
+	/**
+	 * Constant for the 'analysisStatus' attribute in 'item' elements.
+	 */
 	public static final String FLEX__ANALYSIS_STATUS_ATTR = "analysisStatus";
 
+	/**
+	 * Constant for the 'encoding' attribute in 'language' elements. 
+	 */
 	public static final String FLEX_LANGUAGE__ENCODING_ATTR = "encoding";
+	/**
+	 * Constant for the 'font' attribute in 'language' elements.
+	 */
 	public static final String FLEX_LANGUAGE__FONT_ATTR = "font";
+	/**
+	 * Constant for the 'vernacular' attribute in 'language' elements.
+	 */
 	public static final String FLEX_LANGUAGE__VERNACULAR_ATTR = "vernacular";
 
 	// Item types
+	/**
+	 * Constant for the 'txt' value of the 'type' attribute in 'item' elements.
+	 */
 	public static final String FLEX_ITEM_TYPE__TXT = "txt";
 
+	/**
+	 * Constant for the 'punct' value of the 'type' attribute in 'item' elements.
+	 */
 	public static final String FLEX_ITEM_TYPE__PUNCT = "punct";
 
 	// Processing constants
+	/**
+	 * Constant for the key value separator `=` used during processing.
+	 */
 	public static final String PROCESSING__KEY_VALUE_SEPARATOR = "=";
 
+	/**
+	 * Constant for the 'activeElement' variable used during processing.
+	 */
 	public static final String PROCESSING__ACTIVE_ELEMENT_VALUE = "activeElementValue";
+	/**
+	 * Constant for the underscore char used for dynamicising 
+	 * annotation values during processing.
+	 */
 	public static final String PROCESSING__UNDERSCORE = "_";
 }
