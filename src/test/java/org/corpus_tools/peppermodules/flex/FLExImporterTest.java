@@ -1,106 +1,363 @@
+/*******************************************************************************
+ * Copyright (c) 2016, 2018ff. Stephan Druskat
+ * Exploitation rights for this version belong exclusively to Humboldt-Universität zu Berlin
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Stephan Druskat - initial API and implementation
+ *******************************************************************************/
 package org.corpus_tools.peppermodules.flex;
 
 import org.corpus_tools.peppermodules.flex.FLExImporter;
+import org.corpus_tools.peppermodules.flex.model.FLExText;
+import org.corpus_tools.peppermodules.flex.properties.FLExImporterProperties;
+import org.corpus_tools.salt.common.SDocumentGraph;
+import org.corpus_tools.salt.common.STimelineRelation;
+import org.corpus_tools.salt.common.SToken;
+import org.corpus_tools.salt.common.SaltProject;
+import org.corpus_tools.salt.core.SAnnotation;
+import org.corpus_tools.salt.core.SLayer;
+import org.corpus_tools.salt.core.SNode;
+import org.corpus_tools.salt.core.SRelation;
+import org.eclipse.emf.common.util.URI;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import org.corpus_tools.pepper.common.CorpusDesc;
 import org.corpus_tools.pepper.common.FormatDesc;
 import org.corpus_tools.pepper.testFramework.PepperImporterTest;
-import org.corpus_tools.salt.common.SCorpus;
-import org.corpus_tools.salt.common.SDocument;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.LoggerFactory;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.core.Appender;
 
 /**
- * This is a dummy implementation of a JUnit test for testing the
- * {@link FLExImporter} class. Feel free to adapt and enhance this test class
- * for real tests to check the work of your importer. If you are not confirm
- * with JUnit, please have a look at <a
- * href="http://www.vogella.com/tutorials/JUnit/article.html">
- * http://www.vogella.com/tutorials/JUnit/article.html</a>. <br/>
- * Please note, that the test class is derived from {@link PepperImporterTest}.
- * The usage of this class should simplfy your work and allows you to test only
- * your single importer in the Pepper environment.
+ * Unit tests for the FLEx importer module.
+ *
+ * @author Stephan Druskat <[mail@sdruskat.net](mailto:mail@sdruskat.net)>
  * 
- * @author Stephan Druskat
  */
 public class FLExImporterTest extends PepperImporterTest {
+	private Logger rootLogger;
+
+	@SuppressWarnings("rawtypes")
+	private Appender mockAppender;
+
 	/**
 	 * This method is called by the JUnit environment each time before a test
 	 * case starts. So each time a method annotated with @Test is called. This
 	 * enables, that each method could run in its own environment being not
 	 * influenced by before or after running test cases.
 	 */
+	@SuppressWarnings("unchecked")
 	@Before
 	public void setUp() {
 		setFixture(new FLExImporter());
+		this.getFixture().getCorpusDesc().getFormatDesc().setFormatName("toolbox-text").setFormatVersion("3.0");
+		getFixture().getSaltProject().createCorpusGraph();
 
-		// TODO set the formats to be supported by your importer, so that they
-		// can be checked
+		// Logging
+		rootLogger = (ch.qos.logback.classic.Logger) LoggerFactory
+				.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+		mockAppender = mock(Appender.class);
+		when(mockAppender.getName()).thenReturn("MOCK");
+		rootLogger.addAppender(mockAppender);
+		rootLogger.setLevel(Level.WARN);
+
 		FormatDesc formatDef = new FormatDesc();
-		formatDef.setFormatName("sample");
+		formatDef.setFormatName("xml");
 		formatDef.setFormatVersion("1.0");
-		this.supportedFormatsCheck.add(formatDef);
+		addFormatWhichShouldBeSupported(formatDef);
 	}
 
 	/**
-	 * This is a test to check the correct work of our dummy implementation.
-	 * This test is supposed to show the usage of JUnit and to give some
-	 * impressions how to check simple things of the created salt model. <br/>
-	 * You can create as many test cases as you like, just create further
-	 * methods having the annotation
-	 * 
-	 * @Test. Note that it is very helpful, to give them self explaining names
-	 *        and a short JavaDoc explaining their purpose. This could help very
-	 *        much, when searching for bugs or extending the tests. <br/>
-	 *        In our case, we just test, if correct number of corpora and
-	 *        documents was created, if all corpora have got a meta-annotation
-	 *        and if each document-structure contains the right number of nodes
-	 *        and relations.
+	 * Tests the correct alignment of lexical and morphological
+	 * data.
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
-	public void test_DummyImplementation() {
-		// set the path, from where to import the corpus, in our dummy
-		// implementation, the location is also just a dummy
-		getFixture().getCorpusDesc().setCorpusPath(getTempURI("FLExImporter"));
-		// starts the Pepper framework and the conversion process
+	public void testCorrectAlignmentOfMissingMorphologyMaterialAndAnnotations() {
+		setTestFile("missing-morph-annos.flextext");
 		start();
 
-		// checks if the salt project, which is a container for the created salt
-		// model exists.
-		assertNotNull(getFixture().getSaltProject());
-		// checks if really one corpus-structure was created in the target salt
-		// model
-		assertEquals(1, getFixture().getSaltProject().getCorpusGraphs().size());
-		// checks that the corpus-structure contains 3 corpora
-		assertEquals(3, getFixture().getSaltProject().getCorpusGraphs().get(0).getCorpora().size());
-		// checks that the corpus-structure contains 4 documents
-		assertEquals(4, getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().size());
-
-		// checks that each corpus contains a date annotation and that its value
-		// is 1989-12-17
-		for (SCorpus sCorpus : getFixture().getSaltProject().getCorpusGraphs().get(0).getCorpora()) {
-			assertNotNull(sCorpus.getMetaAnnotation("date"));
-			assertEquals("1989-12-17", sCorpus.getMetaAnnotation("date").getValue());
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		SLayer wordLayer = graph.getLayerByName(FLExText.TOKEN_LAYER_LEXICAL).get(0);
+		SLayer morphLayer = graph.getLayerByName(FLExText.TOKEN_LAYER_MORPHOLOGICAL).get(0);
+		assertNotNull(wordLayer);
+		assertNotNull(morphLayer);
+		List<SToken> wordtokens = new ArrayList<>();
+		List<SToken> morphtokens = new ArrayList<>();
+		for (SNode n : wordLayer.getNodes()) {
+			if (n instanceof SToken) {
+				wordtokens.add((SToken) n);
+			}
 		}
-
-		// checks for each document-structure, that all kinds of nodes and
-		// relations are contained
-		for (SDocument sDocument : getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments()) {
-			// checks that all nodes are contained
-			assertEquals(27, sDocument.getDocumentGraph().getNodes().size());
-			// checks that all relations are contained
-			assertEquals(46, sDocument.getDocumentGraph().getRelations().size());
-			// checks that all tokens (subclass of nodes) are contained
-			assertEquals(11, sDocument.getDocumentGraph().getTokens().size());
-			// checks that all spans (subclass of nodes) are contained
-			assertEquals(3, sDocument.getDocumentGraph().getSpans().size());
-			// checks that all structures (subclass of nodes) are contained
-			assertEquals(12, sDocument.getDocumentGraph().getStructures().size());
-			// checks that all pointing relations (subclass of relations) are
-			// contained
-			assertEquals(1, sDocument.getDocumentGraph().getPointingRelations().size());
+		for (SNode n : morphLayer.getNodes()) {
+			if (n instanceof SToken) {
+				morphtokens.add((SToken) n);
+			}
+		}
+		List<SToken> wt = graph.getSortedTokenByText(wordtokens);
+		List<SToken> mt = graph.getSortedTokenByText(morphtokens);
+		assertThat(graph.getTokens().size(), is(33));
+		for (SToken word : wt) {
+			List<SRelation> rels = word.getOutRelations();
+			for (SRelation rel : rels) {
+				if (rel instanceof STimelineRelation) {
+					assertThat(((STimelineRelation) rel).getStart(),
+							anyOf(equalTo(0), equalTo(2), equalTo(5), equalTo(8), equalTo(10), equalTo(13), equalTo(14),
+									equalTo(18), equalTo(20), equalTo(26), equalTo(28), equalTo(30), equalTo(31),
+									equalTo(37), equalTo(43), equalTo(46), equalTo(52)));
+					assertThat(((STimelineRelation) rel).getEnd(),
+							anyOf(equalTo(2), equalTo(5), equalTo(8), equalTo(10), equalTo(13), equalTo(14),
+									equalTo(18), equalTo(20), equalTo(26), equalTo(28), equalTo(30), equalTo(31),
+									equalTo(37), equalTo(43), equalTo(46), equalTo(52), equalTo(53)));
+				}
+			}
+		}
+		for (SToken morpheme : mt) {
+			List<SRelation> rels = morpheme.getOutRelations();
+			for (SRelation rel : rels) {
+				if (rel instanceof STimelineRelation) {
+					assertThat(((STimelineRelation) rel).getStart(),
+							anyOf(equalTo(0), equalTo(2), equalTo(5), equalTo(8), equalTo(10), equalTo(14), equalTo(18),
+									equalTo(20), equalTo(26), equalTo(28), equalTo(30), equalTo(31), equalTo(34),
+									equalTo(37), equalTo(43), equalTo(46)));
+					assertThat(((STimelineRelation) rel).getEnd(),
+							anyOf(equalTo(2), equalTo(5), equalTo(8), equalTo(10), equalTo(13), equalTo(18),
+									equalTo(20), equalTo(26), equalTo(28), equalTo(30), equalTo(31), equalTo(34),
+									equalTo(37), equalTo(43), equalTo(46), equalTo(52)));
+				}
+			}
 		}
 	}
+
+	private String getFile(String fileName) {
+		return this.getClass().getClassLoader().getResource(fileName).getFile();
+	}
+	
+	/* 
+	 * ███████╗███████╗ █████╗ ████████╗██╗   ██╗██████╗ ███████╗███████╗
+	 * ██╔════╝██╔════╝██╔══██╗╚══██╔══╝██║   ██║██╔══██╗██╔════╝██╔════╝
+	 * █████╗  █████╗  ███████║   ██║   ██║   ██║██████╔╝█████╗  ███████╗
+	 * ██╔══╝  ██╔══╝  ██╔══██║   ██║   ██║   ██║██╔══██╗██╔══╝  ╚════██║
+	 * ██║     ███████╗██║  ██║   ██║   ╚██████╔╝██║  ██║███████╗███████║
+	 * ╚═╝     ╚══════╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝╚══════╝╚══════╝
+	 */
+
+	/**
+	 * Tests whether languages are correctly changed
+	 * during the conversion process, with a full
+	 * language set.
+	 */
+	@Test
+	public void testLanguageMapping() {
+		setTestFile("short-sample.flextext");
+		setProperties("properties/language-map.properties");
+		start();
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		for (SNode node : graph.getNodes()) {
+			for (SAnnotation a : node.getAnnotations()) {
+				/* Languages are mapped to namespaces.
+				 */
+				String val = a.getValue_STEXT();
+				String ns = a.getNamespace();
+				if (val.equals("pus")) {
+					/* 
+					 * Original language = "qaa-x-kal", 
+					 * should now be "something"
+					 */
+					assertThat(ns, is("something"));
+				}
+				else if (val.equals("green")) {
+					/* 
+					 * Original language = "en", 
+					 * should now be "ENGLISH"
+					 */
+					assertThat(ns, is("ENGLISH"));
+				}
+				else if (val.equals("french-example")) {
+					/* 
+					 * Original language = "fr", 
+					 * should now be "FRENCH?"
+					 */
+					assertThat(ns, is("FRENCH?"));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Tests whether languages are correctly changed
+	 * during the conversion process, with a non-full
+	 * language set (`fr` is not mapped).
+	 */
+	@Test
+	public void testIncompleteLanguageMapping() {
+		setTestFile("short-sample.flextext");
+		setProperties("properties/incomplete-language-map.properties");
+		start();
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		for (SNode node : graph.getNodes()) {
+			for (SAnnotation a : node.getAnnotations()) {
+				/* 
+				 * Nothing else defined in the properties,
+				 * hence languages should be mapped to namespaces.
+				 */
+				String val = a.getValue_STEXT();
+				String ns = a.getNamespace();
+				if (val.equals("pus")) {
+					/* 
+					 * Original language = "qaa-x-kal", 
+					 * should now be "something"
+					 */
+					assertThat(ns, is("something"));
+				}
+				else if (val.equals("green")) {
+					/* 
+					 * Original language = "en", 
+					 * should now be "ENGLISH"
+					 */
+					assertThat(ns, is("ENGLISH"));
+				}
+				else if (val.equals("french-example")) {
+					/* 
+					 * Original language = "fr", 
+					 * should be unchanged
+					 */
+					assertThat(ns, is("fr"));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Tests whether annotations are correctly
+	 * added to layers during the conversion phase.
+	 */
+	@Test
+	public void testLayerMapping() {
+		setTestFile("short-sample.flextext");
+		start();
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		// FLEx level: interlinear-text
+		assertThat(graph.getDocument().getAnnotation("en", "title"), notNullValue());
+		assertThat(graph.getDocument().getAnnotation("en", "title").getValue_STEXT(), is("Short sample"));
+		assertThat(graph.getDocument().getAnnotation("en", "comment"), notNullValue());
+		assertThat(graph.getDocument().getAnnotation("en", "comment").getValue_STEXT(), is("This is a short sample for text purposes."));
+		// Other FLEx levels
+		for (SNode node : graph.getNodes()) {
+			for (SAnnotation a : node.getAnnotations()) {
+				String val = a.getValue_STEXT();
+				SLayer phraseLayer = graph.getLayerByName(FLExText.ITEM_LAYER_PHRASE).get(0);
+				SLayer wordLayer = graph.getLayerByName(FLExText.ITEM_LAYER_WORD).get(0);
+				SLayer morphLayer = graph.getLayerByName(FLExText.ITEM_LAYER_MORPH).get(0);
+				if (val.equals("french-example")) {
+					/* 
+					 * Level: phrase
+					 */
+					assertTrue(phraseLayer.getNodes().contains(a.getContainer()));
+				}
+				else if (val.equals("green-word")) {
+					/* 
+					 * Level: word
+					 */
+					assertTrue(wordLayer.getNodes().contains(a.getContainer()));
+				}
+				else if (val.equals("adj")) {
+					/* 
+					 * Level: morph
+					 */
+					assertTrue(morphLayer.getNodes().contains(a.getContainer()));
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Tests whether languages are correctly changed
+	 * during the conversion process, with a non-full
+	 * language set (`fr` is not mapped).
+	 */
+	@Test
+	public void testTypeMapping() {
+		setTestFile("short-sample.flextext");
+		setProperties("properties/type-map.properties");
+		start();
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		/* 
+		 * Check that types have been mapped according to
+		 * type-map.properties 
+		 */
+		for (SNode node : graph.getNodes()) {
+			for (SAnnotation a : node.getAnnotations()) {
+				String val = a.getValue_STEXT();
+				if (val.equals("pus")) {
+					assertThat(a.getName(), is("tx"));
+				}
+				else if (val.equals("pusword")) {
+					assertThat(a.getName(), is("tx"));
+				}
+				else if (val.equals("puscf")) {
+					assertThat(a.getName(), is("cf"));
+				}
+				else if (val.equals("1hn")) {
+					assertThat(a.getName(), is("nh"));
+				}
+				else if (val.equals("green")) {
+					assertThat(a.getName(), is("ge"));
+				}
+				else if (val.equals("adj")) {
+					assertThat(a.getName(), is("ms"));
+				}
+			}
+		}
+	}
+
+	private void setProperties(String fileName) {
+		FLExImporterProperties properties = new FLExImporterProperties();
+		properties.setPropertyValues(new File(getFile(fileName)));
+		getFixture().setProperties(properties);
+	}
+
+	private void setTestFile(String fileName) {
+		getFixture().setCorpusDesc(new CorpusDesc().setCorpusPath(URI.createFileURI(getFile(fileName))));
+	}
+
 }
