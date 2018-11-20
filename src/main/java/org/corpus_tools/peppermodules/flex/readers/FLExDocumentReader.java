@@ -1,3 +1,22 @@
+/*******************************************************************************
+ * Copyright (c) 2016, 2018ff. Stephan Druskat
+ * Exploitation rights for this version belong exclusively to Humboldt-Universität zu Berlin
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Stephan Druskat - initial API and implementation
+ *******************************************************************************/
 package org.corpus_tools.peppermodules.flex.readers;
 
 import java.util.ArrayList; 
@@ -19,6 +38,7 @@ import org.corpus_tools.salt.common.STimeline;
 import org.corpus_tools.salt.common.STimelineRelation;
 import org.corpus_tools.salt.common.SToken;
 import org.corpus_tools.salt.core.SAnnotation;
+import org.corpus_tools.salt.core.SNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -33,7 +53,15 @@ import com.google.common.collect.Table;
  * In the process, the FLEx XML values are mapped onto a *Salt* model
  * following these principles:
  * 
- * TODO Complete from here
+ * - `interlinear-text` elements are mapped to {@link SDocument}s.
+ * - `paragraph`s, are mapped to {@link SSpan}s, which span over
+ * - `phrase`s, which are mapped to {@link SSpan}s, which span over
+ * - `word`s and `morph`s, both of which are mapped to {@link SToken}s,
+ * which are tied to an {@link STextualDS} each.
+ * - Annotations (`item`s) for each layer are tied to the
+ * respective {@link SNode} ({@link SToken} or {@link SSpan})
+ * - XML attributes are mapped as {@link SAnnotation} to the
+ * respective {@link SNode}.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
  **/
@@ -72,8 +100,8 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 	private boolean wordHasMorphemes;
 
 	/**
-	 * @param document
-	 * @param pepperModuleProperties 
+	 * @param document The document to be read into
+	 * @param pepperModuleProperties The properties to be applied to the conversion process
 	 */
 	public FLExDocumentReader(SDocument document, PepperModuleProperties pepperModuleProperties) {
 		super(pepperModuleProperties);
@@ -413,6 +441,9 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.xml.sax.helpers.DefaultHandler#fatalError(org.xml.sax.SAXParseException)
+	 */
 	@Override
 	public void fatalError(SAXParseException e) {
 		logger.error(
