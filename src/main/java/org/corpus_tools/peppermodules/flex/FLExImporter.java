@@ -19,27 +19,23 @@
  *******************************************************************************/
 package org.corpus_tools.peppermodules.flex;
 
-import org.corpus_tools.pepper.impl.PepperImporterImpl;
+import org.corpus_tools.pepper.impl.PepperImporterImpl; 
 import org.corpus_tools.pepper.modules.PepperImporter;
 import org.corpus_tools.pepper.modules.PepperMapper;
 import org.corpus_tools.salt.graph.Identifier;
 import org.eclipse.emf.common.util.URI;
 import org.osgi.service.component.annotations.Component;
 
-// FIXME: Similar to https://github.com/korpling/pepperModules-ModuleBox/blob/05b1b6f4f57292b7a297d72500e834ce01e0ef42/src/main/java/org/corpus_tools/peppermodules/toolboxModules/WolofImporter.java !!!
-
 /**
- * TODO Description
+ * A Pepper importer for the FLEx XML format.
  *
  * @author Stephan Druskat <mail@sdruskat.net>
- *
  */
 @Component(name = "FLExImporterComponent", factory = "PepperImporterComponentFactory")
 public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 	
 	/**
-	 * // TODO Add description
-	 * 
+	 * No-args contructor setting importer module metadata.
 	 */
 	public FLExImporter() {
 		super();
@@ -51,6 +47,9 @@ public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 		getDocumentEndings().add("flextext");
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.corpus_tools.pepper.impl.PepperModuleImpl#createPepperMapper(org.corpus_tools.salt.graph.Identifier)
+	 */
 	@Override
 	public PepperMapper createPepperMapper(Identifier Identifier) {
 		FLExMapper mapper = new FLExMapper();
@@ -58,6 +57,9 @@ public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 		return (mapper);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.corpus_tools.pepper.impl.PepperImporterImpl#isImportable(org.eclipse.emf.common.util.URI)
+	 */
 	@Override
 	public Double isImportable(URI corpusPath) {
 		// TODO some code to analyze the given corpus-structure

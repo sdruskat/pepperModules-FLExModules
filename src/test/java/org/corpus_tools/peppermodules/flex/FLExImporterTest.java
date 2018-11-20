@@ -97,13 +97,12 @@ public class FLExImporterTest extends PepperImporterTest {
 	}
 
 	/**
-	 * // TODO Add description
-	 * FIXME: What does this actually test?
-	 * 
+	 * Tests the correct alignment of lexical and morphological
+	 * data.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Test
-	public void testCorrectResolutionOfMissingMorphologyMaterialAndAnnotations() {
+	public void testCorrectAlignmentOfMissingMorphologyMaterialAndAnnotations() {
 		setTestFile("missing-morph-annos.flextext");
 		start();
 
@@ -159,8 +158,6 @@ public class FLExImporterTest extends PepperImporterTest {
 				}
 			}
 		}
-		SaltProject project = getFixture().getSaltProject();
-		project.saveSaltProject(URI.createFileURI(System.getProperty("java.io.tmpdir") + "/flextest/saltproject/"));
 	}
 
 	private String getFile(String fileName) {
