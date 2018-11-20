@@ -40,9 +40,9 @@ import org.corpus_tools.salt.core.SAnnotation;
  * +---------------------------------------------------------------------------------------------+
  * | SCorpus document                                                                            |
  * +---------------------------------------------------------------------------------------+-----+
- * | SDocument interlinear-text                                                            |     |
- * |     annotations:                                                                      | ... |
- * |         item "type"_"lang":value                                                      |     |
+ * | SDocument interlinear-text                                                            |     | *Currently, only
+ * |     annotations:                                                                      | ... |  one interlinear-text
+ * |         item "type"_"lang":value                                                      |     |  per file implemented!
  * +---------------------------------------------------------------------------------+-----+-----+
  * | SSpan phrase "item 'segnum'"                                                    |     |
  * |     annotations:                                                                | ... |    
