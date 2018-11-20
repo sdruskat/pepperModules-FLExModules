@@ -4,7 +4,9 @@
 
 ## How to cite
 
-TBA
+If you publish research for which this software has been used, you are required
+to cite the software. The respective metadata can be found in the file
+[CITATION.cff](CITATION.cff).
 
 ## General information
 
