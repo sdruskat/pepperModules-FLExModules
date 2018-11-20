@@ -121,9 +121,9 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			
-			
+
+
+
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
@@ -173,6 +173,14 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<!-- Disable Findbugs Plugin -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
