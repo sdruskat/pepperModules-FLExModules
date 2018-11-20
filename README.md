@@ -8,19 +8,40 @@ TBA
 
 ## General information
 
-TBA
+
+[Pepper](http://corpus-tools.org/pepper) is a conversion framework for linguistic data. 
+*pepperModules-FLExModules* is a plugin for *Pepper* and provides an
+importer for **FLEx XML**, i.e., the XML
+export format from 
+[SIL Fieldworks Language Explorer](https://software.sil.org/fieldworks/). 
+The format
+is used frequently for persisting language documentation data.
+
+With the *pepperModules-FLExModules* importer, the data stored in FLEx XML 
+interlinear text files can be transferred to another format. This way, the data 
+can be re-used for other
+purposes (such as adding different annotation types), or visualized and analyzed,
+e.g., in [ANNIS](http://corpus-tools.org/annis), a search and visualization 
+platform for linguistic data. For a list of available format converters for Pepper,
+see the [list of known Pepper modules](http://corpus-tools.org/pepper/knownModules.html).
 
 ## Context
 
-TBA
+The development of pepperModules-ToolboxTextModules has been initiated in the 
+[MelaTAMP research project](https://hu.berlin/melatamp).
 
 ## Requirements
 
-TBA
+`Pepper >= 3.1.1-SNAPSHOT`
 
 ## Usage
 
-TBA
+- Create a [Pepper workflow 
+file](http://corpus-tools.org/pepper/userGuide.html#workflow_file) for the 
+conversion, with the importer set to `FLExImporter`. Configure #properties as
+needed.
+- [Download Pepper](http://corpus-tools.org/pepper/), and run it with the 
+workflow file.
 
 ## Importer
 
