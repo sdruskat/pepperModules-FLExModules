@@ -95,3 +95,16 @@ to the XML schema XSD file supplied by SIL, paragraphs cannot have annotations).
 As *FLExText* files can contain `n` documents (corresponding to the XML element `interlinear-text`).
 However, files with more than one `interlinear-text` element cannot currently
 be processed by the FLExImporter.
+
+# Development workflow
+
+THe development workflow for this project tries to merge Gitflow and use of the
+Maven Release Plugin:
+
+1. Create a branch and do work. When the work is done, merge back into `master` 
+*without creating a new tag* (tagging is done via the Maven Release Plugin).
+2. Run `mvn release:prepare` and `mvn release:perform` which will create the
+SCM (git) tag and pushes to the repository on Github.
+3. Add anything that's needed to the GitHub release, update the DOI in the
+README (prereserve on Zenodo), publish the GitHub release, and update the
+Zenodo release.
