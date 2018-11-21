@@ -13,13 +13,10 @@
 		<artifactId>pepper-parentModule</artifactId>
 		<version>3.2.7</version>
 	</parent>
-
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/sdruskat/pepperModules-FLExModules/issues</url>
 	</issueManagement>
-
-
 	<distributionManagement>
 		<!-- Site to deploy releases to. -->
 		<repository>
@@ -43,11 +40,9 @@
 		<url>https://github.com/sdruskat/pepperModules-FLExModules</url>
 		<tag>HEAD</tag>
 	</scm>
-
 	<organization>
 		<name>Humboldt-Universität zu Berlin</name>
 	</organization>
-
 	<developers>
 		<developer>
 			<name>Stephan Druskat</name>
@@ -57,7 +52,6 @@
 			<organizationUrl>https://hu.berlin/melatamp</organizationUrl>
 		</developer>
 	</developers>
-
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
@@ -65,14 +59,12 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<citation.file>${basedir}/CITATION.cff</citation.file>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -86,7 +78,6 @@
 			<version>1.1.3</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -100,7 +91,8 @@
 						<version>1.1</version>
 					</docletArtifact>
 					<useStandardDocletOptions>true</useStandardDocletOptions>
-					<show>private</show> <!-- TODO Decide if this should stay -->
+					<show>private</show>
+					<!-- TODO Decide if this should stay -->
 				</configuration>
 			</plugin>
 			<!-- Coveralls plugin (only used in Travis build) -->
@@ -126,9 +118,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-
-
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
@@ -207,36 +196,36 @@
 				<version>0.3.1</version>
 			</extension>
 		</extensions>
-	</build>
-
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9</version>
-				<reportSets>
-					<reportSet><!-- by default, id = "default" -->
-						<reports><!-- select non-aggregate reports -->
-							<report>javadoc</report>
-							<report>test-javadoc</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<reportSets>
-					<reportSet>
-						<reports>
-							<!-- select non-aggregate reports -->
-							<report>report</report>
-						</reports>
-					</reportSet>
-				</reportSets>
-			</plugin>
-		</plugins>
-	</reporting>
+		<reporting>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.9</version>
+					<reportSets>
+						<reportSet>
+							<!-- by default, id = "default" -->
+							<reports>
+								<!-- select non-aggregate reports -->
+								<report>javadoc</report>
+								<report>test-javadoc</report>
+							</reports>
+						</reportSet>
+					</reportSets>
+				</plugin>
+				<plugin>
+					<groupId>org.jacoco</groupId>
+					<artifactId>jacoco-maven-plugin</artifactId>
+					<reportSets>
+						<reportSet>
+							<reports>
+								<!-- select non-aggregate reports -->
+								<report>report</report>
+							</reports>
+						</reportSet>
+					</reportSets>
+				</plugin>
+			</plugins>
+		</reporting>
 	</build>
 </project>
