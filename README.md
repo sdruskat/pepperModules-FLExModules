@@ -98,14 +98,30 @@ be processed by the FLExImporter.
 
 # Development workflow
 
-The development workflow for this project tries to merge Gitflow and use of the
-Maven Release Plugin:
+The development workflow for this project uses 
+[Gitflow](https://nvie.com/posts/a-successful-git-branching-model/) and the 
+[JGit-Flow](https://bitbucket.org/atlassian/jgit-flow/) Maven plugin, which 
+solves a lot of the headache provided by the
+[Maven Release Plugin](http://maven.apache.org/maven-release/maven-release-plugin/), 
+e.g., SNAPSHOTs in the `master` branch.
 
-1. Create a branch and do work. When the work is done, merge back into `master` 
-*without creating a new tag* (tagging is done via the Maven Release Plugin).
-2. Run `mvn release:prepare` and `mvn release:perform` which will create the
-SCM (git) tag and pushes to the repository on Github.
-3. Add anything that's needed to the GitHub release, update the DOI in the
+## Features
+
+Features are developed as usual in feature branches and merged back onto
+`develop` once they are finished.
+
+## Releases
+
+Releases are tagged as such on GitHub and must be released to Maven Central.
+This is done by running `mvn jgitflow:release-start` and 
+`mvn jgitflow:release-finish` on `development`. The JGit-Flow plugin takes
+care of following the Gitflow workflow while performing a release to
+Maven Central at the same time.
+
+Note that the staged release will still have to be released manually through
+<https://oss.sonatype.org/>.
+
+Add anything that's needed to the GitHub release, update the DOI in the
 README (prereserve on Zenodo), publish the GitHub release, and update the
 Zenodo release.
 
