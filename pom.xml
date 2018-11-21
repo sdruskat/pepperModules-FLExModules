@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>pepperModules-FLExModules</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 	<name>FLExModules</name>
 	<description>A Pepper module providing an importer for FLEx XML.</description>
@@ -13,13 +13,10 @@
 		<artifactId>pepper-parentModule</artifactId>
 		<version>3.2.7</version>
 	</parent>
-
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/sdruskat/pepperModules-FLExModules/issues</url>
 	</issueManagement>
-
-
 	<distributionManagement>
 		<!-- Site to deploy releases to. -->
 		<repository>
@@ -43,11 +40,9 @@
 		<url>https://github.com/sdruskat/pepperModules-FLExModules</url>
 		<tag>HEAD</tag>
 	</scm>
-
 	<organization>
 		<name>Humboldt-Universität zu Berlin</name>
 	</organization>
-
 	<developers>
 		<developer>
 			<name>Stephan Druskat</name>
@@ -57,7 +52,6 @@
 			<organizationUrl>https://hu.berlin/melatamp</organizationUrl>
 		</developer>
 	</developers>
-
 	<licenses>
 		<license>
 			<name>Apache License, Version 2.0</name>
@@ -65,14 +59,12 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<citation.file>${basedir}/CITATION.cff</citation.file>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
@@ -86,7 +78,6 @@
 			<version>1.1.3</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -100,7 +91,8 @@
 						<version>1.1</version>
 					</docletArtifact>
 					<useStandardDocletOptions>true</useStandardDocletOptions>
-					<show>private</show> <!-- TODO Decide if this should stay -->
+					<show>private</show>
+					<!-- TODO Decide if this should stay -->
 				</configuration>
 			</plugin>
 			<!-- Coveralls plugin (only used in Travis build) -->
@@ -126,9 +118,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
-
-
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
@@ -208,7 +197,6 @@
 			</extension>
 		</extensions>
 	</build>
-
 	<reporting>
 		<plugins>
 			<plugin>
@@ -216,8 +204,10 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9</version>
 				<reportSets>
-					<reportSet><!-- by default, id = "default" -->
-						<reports><!-- select non-aggregate reports -->
+					<reportSet>
+						<!-- by default, id = "default" -->
+						<reports>
+							<!-- select non-aggregate reports -->
 							<report>javadoc</report>
 							<report>test-javadoc</report>
 						</reports>
@@ -238,5 +228,4 @@
 			</plugin>
 		</plugins>
 	</reporting>
-	</build>
 </project>

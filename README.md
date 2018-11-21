@@ -98,7 +98,7 @@ be processed by the FLExImporter.
 
 # Development workflow
 
-THe development workflow for this project tries to merge Gitflow and use of the
+The development workflow for this project tries to merge Gitflow and use of the
 Maven Release Plugin:
 
 1. Create a branch and do work. When the work is done, merge back into `master` 
