@@ -108,3 +108,7 @@ SCM (git) tag and pushes to the repository on Github.
 3. Add anything that's needed to the GitHub release, update the DOI in the
 README (prereserve on Zenodo), publish the GitHub release, and update the
 Zenodo release.
+
+# Javadoc Documentation
+
+The Javadoc documentation can be found at <https://sdruskat.github.io/pepperModules-FLExModules>
