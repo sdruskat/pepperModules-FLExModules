@@ -111,4 +111,4 @@ Zenodo release.
 
 # Javadoc Documentation
 
-The Javadoc documentation can be found at <https://sdruskat.github.io/pepperModules-FLExModules>
+The Javadoc documentation can be found at <https://sdruskat.github.io/pepperModules-FLExModules>.
