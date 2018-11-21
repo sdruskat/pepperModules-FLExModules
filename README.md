@@ -1,6 +1,6 @@
 # FLExText Modules for the Pepper conversion framework for linguistic data
 
-[![Build Status](https://travis-ci.org/sdruskat/pepperModules-FLExModules.svg?branch=develop)](https://travis-ci.org/sdruskat/pepperModules-FLExModules) [![Coverage Status](https://coveralls.io/repos/github/sdruskat/pepperModules-FLExModules/badge.svg?branch=develop)](https://coveralls.io/github/sdruskat/pepperModules-FLExModules?branch=develop) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1492292.svg)](https://doi.org/10.5281/zenodo.1492292)
+[![Build Status](https://travis-ci.org/sdruskat/pepperModules-FLExModules.svg?branch=develop)](https://travis-ci.org/sdruskat/pepperModules-FLExModules) [![Coverage Status](https://coveralls.io/repos/github/sdruskat/pepperModules-FLExModules/badge.svg?branch=develop)](https://coveralls.io/github/sdruskat/pepperModules-FLExModules?branch=develop) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1492292.svg)](https://doi.org/10.5281/zenodo.1492292) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.corpus-tools/pepperModules-FLExModules/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.corpus-tools/pepperModules-FLExModules)
 
 ## How to cite
 

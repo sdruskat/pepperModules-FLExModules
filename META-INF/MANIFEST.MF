@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1542720309998
+Bnd-LastModified: 1542744588886
 Build-Jdk: 1.8.0_181
 Built-By: stephan
-Bundle-Description: Provides shared POM-data.
-Bundle-License: http://www.apache.org/licenses/LICENSE-2.0.txt
+Bundle-Description: A Pepper module providing an importer for FLEx XML.
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0
 Bundle-ManifestVersion: 2
 Bundle-Name: pepperModules-FLExModules
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.corpus-tools.pepperModules-FLExModules;singleto
  n:=true
 Bundle-Vendor: Humboldt-Universität zu Berlin
@@ -22,14 +22,14 @@ Export-Package: org.corpus_tools.peppermodules.flex;uses:="org.corpus_to
  _tools.pepper.modules";version="1.0.0"
 Import-Package: com.google.common.collect;version="[19.0,20)",javax.xml.
  transform,javax.xml.transform.stream,javax.xml.validation,org.corpus_to
- ols.pepper.common;version="[3.1,4)",org.corpus_tools.pepper.impl;versio
- n="[3.1,4)",org.corpus_tools.pepper.modules;version="[3.1,4)",org.corpu
+ ols.pepper.common;version="[3.2,4)",org.corpus_tools.pepper.impl;versio
+ n="[3.2,4)",org.corpus_tools.pepper.modules;version="[3.2,4)",org.corpu
  s_tools.salt;version="[3.3,4)",org.corpus_tools.salt.common;version="[3
  .3,4)",org.corpus_tools.salt.core;version="[3.3,4)",org.corpus_tools.sa
  lt.graph;version="[3.3,4)",org.eclipse.emf.common.util,org.slf4j,org.xm
  l.sax,org.xml.sax.ext
 META-INF: /home/stephan/src/pepperModules-FLExModules/META-INF
 OSGI-INF: OSGI-INF
-Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.7))"
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
 Service-Component: OSGI-INF/service-component/*.xml
-Tool: Bnd-2.3.0.201405100607
+Tool: Bnd-2.4.1.201501161923
