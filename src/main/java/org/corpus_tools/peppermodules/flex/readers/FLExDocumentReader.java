@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.corpus_tools.pepper.modules.PepperModuleProperties;
 import org.corpus_tools.peppermodules.flex.model.FLExText;
+import org.corpus_tools.peppermodules.flex.properties.FLExImporterProperties;
 import org.corpus_tools.salt.SaltFactory;
 import org.corpus_tools.salt.common.SDocument;
 import org.corpus_tools.salt.common.SDocumentGraph;
@@ -99,6 +101,10 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 
 	private boolean wordHasMorphemes;
 
+	private List<Triple<String, String, String>> annotationsToDrop;
+
+	private FLExImporterProperties fLExProperties;
+
 	/**
 	 * @param document The document to be read into
 	 * @param pepperModuleProperties The properties to be applied to the conversion process
@@ -110,6 +116,10 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 		morphDS.setName("morphological-data");
 		wordDS = graph.createTextualDS("");
 		wordDS.setName("lexical-data");
+		if (properties instanceof FLExImporterProperties) {
+			fLExProperties = (FLExImporterProperties) properties;
+			annotationsToDrop = fLExProperties.getAnnotationsToDrop();
+		}
 	}
 
 	/* (non-Javadoc)
@@ -130,6 +140,9 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 			}
 		}
 		else if (TAG_LANGUAGE.equals(qName)) {
+			if (annotationsToDrop != null && annotationsToDrop.contains(Triple.of(null, null, "languages"))) {
+				return;
+			}
 			itemParent = Element.LANGUAGE;
 			SAnnotation annotation = SaltFactory.createSAnnotation();
 			annotation.setNamespace(TAG_LANGUAGES);
@@ -163,7 +176,9 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				 * Use Salt API here as annotation is expected to be unique and
 				 * FLExReader API needs a node ID (which is null at this point).
 				 */
-				span.createAnnotation(TAG_PHRASE, attributes.getQName(i), attributes.getValue(i));
+				if (!dropAnnotation("phrase", attributes.getQName(i))) {
+					span.createAnnotation(TAG_PHRASE, attributes.getQName(i), attributes.getValue(i));
+				}
 			}
 			phrases.add(span);
 		}
@@ -325,8 +340,10 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 			graph.addNode(span);
 			while (rowIterator.hasNext()) {
 				Map<String, String> row = rowIterator.next();
-				createLanguagedAnnotation(span, row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR),
+				if (!dropAnnotation("phrase", row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR))) {
+					createLanguagedAnnotation(span, row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR),
 						row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+				}
 				graph.getLayerByName(ITEM_LAYER_PHRASE).get(0).addNode(span);
 			}
 
@@ -358,8 +375,10 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				if (type.equals(FLEX_ITEM_TYPE__TXT) || type.equals(FLEX_ITEM_TYPE__PUNCT)) {
 					tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 				}
-				createLanguagedAnnotation(token, row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR),
-						row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+				if (!dropAnnotation("word", row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR))) {
+					createLanguagedAnnotation(token, row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR),
+							row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+				}
 				graph.getLayerByName(ITEM_LAYER_WORD).get(0).addNode(token);
 			}
 			String oldText = wordDS.getText();
@@ -400,8 +419,10 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 					tokenText = row.get(PROCESSING__ACTIVE_ELEMENT_VALUE);
 				}
 				else {
-					createLanguagedAnnotation(token, row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR),
-							row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+					if (!dropAnnotation("morph", row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR))) {
+						createLanguagedAnnotation(token, row.get(FLEX__LANG_ATTR), row.get(FLEX__TYPE_ATTR),
+								row.get(PROCESSING__ACTIVE_ELEMENT_VALUE));
+					}
 					graph.getLayerByName(ITEM_LAYER_MORPH).get(0).addNode(token);
 				}
 			}
@@ -450,5 +471,22 @@ public class FLExDocumentReader extends FLExReader implements FLExText {
 				"Caught a fatal error while parsing the XML file! Most likely, there will be content before the '<?xml>' element, such as text or a UTF-8 BOM. "
 						+ e.getLineNumber(),
 				e);
+	}
+
+	private boolean dropAnnotation(String layer, String name) {
+		return dropAnnotation(layer, null, name);
+	}
+
+	private boolean dropAnnotation(String layer, String language, String name) {
+		for (Triple<String, String, String> triple : annotationsToDrop) {
+			if (triple.equals(Triple.of(layer, language, name))
+					|| triple.equals(Triple.of(null, language, name))
+					|| triple.equals(Triple.of(layer, null, name))
+					|| triple.equals(Triple.of(null, null, name))
+					) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

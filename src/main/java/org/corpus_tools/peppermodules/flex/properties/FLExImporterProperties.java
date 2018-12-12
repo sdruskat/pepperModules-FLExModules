@@ -22,10 +22,15 @@
  */
 package org.corpus_tools.peppermodules.flex.properties;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang3.tuple.Triple;
 import org.corpus_tools.pepper.modules.PepperModuleProperties;
 import org.corpus_tools.pepper.modules.PepperModuleProperty;
 
@@ -57,6 +62,17 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	 */
 	static final String PROP_TYPEMAP = "typeMap";
 	/**
+	 *  A list of annotations that should be ignored during 
+	 *  conversion. Annotations are defined as 
+	 *  `{phrase|word|morph}::{language}:name`, 
+	 *  of which the layer (the first) and the language 
+	 *  (the second) element are optional. `languages` 
+	 *  is a reserved name and will drop all language 
+	 *  meta annotations from the child elements of 
+	 *  `<languages/>`.
+	 */
+	static final String PROP_DROP_ANNOTATIONS = "dropAnnotations";
+	/**
 	 * A constant for the the mapping symbol in
 	 * {@link #PROP_LANGUAGEMAP} and {@link #PROP_TYPEMAP}.
 	 */
@@ -67,10 +83,13 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	 */
 	public FLExImporterProperties() {
 	addProperty(PepperModuleProperty.create().withName(PROP_LANGUAGEMAP).withType(String.class).withDescription(
-			"Map for changing FLEx 'lang' element values during conversion. Syntax: 'original-value=new-value,English=en")
+			"Map for changing FLEx 'lang' element values during conversion. Syntax: 'original-value=new-value,English=en'")
 			.isRequired(false).build());
 	addProperty(PepperModuleProperty.create().withName(PROP_TYPEMAP).withType(String.class).withDescription(
-			"Map for changing FLEx 'type' element values (i.e., annotation keys) during conversion. Syntax: 'original-value=new-value,gls=ge")
+			"Map for changing FLEx 'type' element values (i.e., annotation keys) during conversion. Syntax: 'original-value=new-value,gls=ge'")
+			.isRequired(false).build());
+	addProperty(PepperModuleProperty.create().withName(PROP_DROP_ANNOTATIONS).withType(String.class).withDescription(
+			"List of annotations to be dropped during conversion. Syntax: '{phrase|word|morph}::{language}:name,languages,morph::en:hn,fr:gls,morph::dro,xxx'")
 			.isRequired(false).build());
 	}
 	
@@ -82,6 +101,49 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	@SuppressWarnings("javadoc")
 	public Map<String, String> getTypeMap() {
 		return buildMap(getProperty(PROP_TYPEMAP));
+	}
+	
+	@SuppressWarnings("javadoc")
+	public List<Triple<String,String,String>> getAnnotationsToDrop() {
+		List<Triple<String, String, String>> list = new ArrayList<>();
+		if (getProperty(PROP_DROP_ANNOTATIONS).getValue() == null) {
+			return list;
+		}
+		for (String annotation : ((String) getProperty(PROP_DROP_ANNOTATIONS).getValue()).split(",")) {
+			String layer = null;
+			String language = null;
+			String name = null;
+			String[] layerSplit = annotation.split("::");
+			if (layerSplit.length == 2) {
+				// layer::name | layer::language:name
+				layer = layerSplit[0].trim();
+				String[] languageNameSplit = null;
+				if ((languageNameSplit = layerSplit[1].split(":")).length == 2) {
+					// layer::language:name
+					language = languageNameSplit[0].trim();
+					name = languageNameSplit[1].trim();
+				}
+				else {
+					// layer::name
+					name = layerSplit[1];
+				}
+			}
+			else {
+				// layer:name | name | 'languages'
+				String[] languageNameSplit = annotation.split(":");
+				if (languageNameSplit.length == 2) {
+					// layer:name
+					language = languageNameSplit[0].trim();
+					name = languageNameSplit[1].trim();
+				}
+				else {
+					// name | 'languages'
+					name = annotation.trim();
+				}
+			}
+			list.add(Triple.of(layer, language, name));
+		}
+		return list;
 	}
 
 	/**

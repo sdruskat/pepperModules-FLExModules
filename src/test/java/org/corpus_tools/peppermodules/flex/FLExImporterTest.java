@@ -25,7 +25,6 @@ import org.corpus_tools.peppermodules.flex.properties.FLExImporterProperties;
 import org.corpus_tools.salt.common.SDocumentGraph;
 import org.corpus_tools.salt.common.STimelineRelation;
 import org.corpus_tools.salt.common.SToken;
-import org.corpus_tools.salt.common.SaltProject;
 import org.corpus_tools.salt.core.SAnnotation;
 import org.corpus_tools.salt.core.SLayer;
 import org.corpus_tools.salt.core.SNode;
@@ -44,6 +43,7 @@ import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -349,6 +349,78 @@ public class FLExImporterTest extends PepperImporterTest {
 			}
 		}
 	}
+	
+	/**
+	 * Test whether annotations are correctly
+	 * dropped during conversion according to
+	 * {@link FLExImporterProperties#getAnnotationsToDrop()}.
+	 * 
+	 */
+	@Test
+	public void testDropAnnotations() {
+		setTestFile("short-sample-drop.flextext");
+		setProperties("properties/drop-annotations.properties");
+		start();
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		/* 
+		 * Check that annotations have been dropped according
+		 * to property 
+		 */
+		assertThat(graph.getDocument().getAnnotation("languages::en"), is(nullValue()));
+		assertThat(graph.getDocument().getAnnotation("languages::qaa-x-kal"), is(nullValue()));
+		assertThat(graph.getDocument().getAnnotation("languages::fr"), is(nullValue()));
+		assertThat(graph.getDocument().getAnnotation("languages::xas"), is(nullValue()));
+		for (SNode node : graph.getNodes()) {
+			for (SLayer l : node.getLayers()) {
+				if (l.getName().equals("morph")) {
+					assertThat(node.getAnnotation("en::hn"), is(nullValue()));
+					assertThat(node.getAnnotation("fr::gls"), is(nullValue()));
+					assertThat(node.getAnnotation("fr::dro"), is(nullValue()));
+					assertThat(node.getAnnotation("en::dro"), is(nullValue()));
+					assertThat(node.getAnnotation("en::xxx"), is(nullValue()));
+				}
+				else if (l.getName().equals("phrase")) {
+					assertThat(node.getAnnotation("fr::gls"), is(nullValue()));
+					assertThat(node.getAnnotation("de::xxx"), is(nullValue()));
+				}
+				else if (l.getName().equals("word")) {
+					assertThat(node.getAnnotation("fr::xxx"), is(nullValue()));
+				}
+			}
+		}
+	}
+	
+//	/**
+//	 * Test whether {@link Triple}s are correctly parsed from
+//	 * {@link FLExImporterProperties#getAnnotationsToDrop()}.
+//	 */
+//	@Test
+//	public void testDropAnnotationTriples() {
+//		setProperties("properties/drop-annotations.properties");
+//		List<Triple<String, String, String>> drops = ((FLExImporterProperties) getFixture().getProperties()).getAnnotationsToDrop();
+//		assertThat(drops.size(), is(5));
+//		assertThat(drops.get(0).getLeft(), is(nullValue()));
+//		assertThat(drops.get(0).getMiddle(), is(nullValue()));
+//		assertThat(drops.get(0).getRight(), is("languages"));
+//		
+//		assertThat(drops.get(1).getLeft(), is("morph"));
+//		assertThat(drops.get(1).getMiddle(), is("en"));
+//		assertThat(drops.get(1).getRight(), is("hn"));
+//		
+//		assertThat(drops.get(2).getLeft(), is(nullValue()));
+//		assertThat(drops.get(2).getMiddle(), is("fr"));
+//		assertThat(drops.get(2).getRight(), is("gls"));
+//		
+//		assertThat(drops.get(3).getLeft(), is("morph"));
+//		assertThat(drops.get(3).getMiddle(), is(nullValue()));
+//		assertThat(drops.get(3).getRight(), is("dro"));
+//		
+//		assertThat(drops.get(4).getLeft(), is(nullValue()));
+//		assertThat(drops.get(4).getMiddle(), is(nullValue()));
+//		assertThat(drops.get(4).getRight(), is("xxx"));
+//	}
 
 	private void setProperties(String fileName) {
 		FLExImporterProperties properties = new FLExImporterProperties();
