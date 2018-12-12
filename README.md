@@ -84,10 +84,11 @@ to the XML schema XSD file supplied by SIL, paragraphs cannot have annotations).
 
 ### Properties
 
-| Property | Description | Example |
-|----------|-------------|---------|
-|`languageMap`| A map with original 'lang' strings and the target strings the original should be changed to during conversion. | `<property key="languageMap">ENGLISH=en,NORTH-AMBRYM=mmg</property>`|
-|`typeMap`| A map with original 'type' strings and the target strings the original should be changed to during conversion. | `<property key="typeMap">txt=tx,gls=ge</property>`|
+|      Property     |                                                  Description                                                   |                               Example                                |
+|-------------------|----------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|
+| `languageMap`     | A map with original 'lang' strings and the target strings the original should be changed to during conversion. | `<property key="languageMap">ENGLISH=en,NORTH-AMBRYM=mmg</property>` |
+| `typeMap`         | A map with original 'type' strings and the target strings the original should be changed to during conversion. | `<property key="typeMap">txt=tx,gls=ge</property>`                   |
+| `dropAnnotations` | A list of annotations that should be ignored during conversion. Annotations are defined as `{phrase|word|morph}::{language}:name`, of which the layer (the first) and the language (the second) element are optional. `languages` is a reserved name and will drop all language meta annotations from the child elements of `<languages/>`.                                              | `<property key="dropAnnotations">languages,morph::en:hn,fr:gls,morph::dro,xxx</property>`                   |
 
 
 ## One document per file
