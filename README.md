@@ -34,7 +34,7 @@ The development of pepperModules-ToolboxTextModules has been initiated in the
 
 ## Requirements
 
-`Pepper >= 3.1.1-SNAPSHOT`
+`Pepper >= 3.2.7`
 
 ## Usage
 
