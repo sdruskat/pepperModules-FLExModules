@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Bnd-LastModified: 1544641713968
+Bnd-LastModified: 1544707198228
 Build-Jdk: 1.8.0_191
 Built-By: stephan
 Bundle-Description: A Pepper module providing an importer for FLEx XML.
@@ -10,24 +10,26 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: org.corpus-tools.pepperModules-FLExModules;singleto
  n:=true
 Bundle-Vendor: Humboldt-Universität zu Berlin
-Bundle-Version: 1.0.7
+Bundle-Version: 1.0.8.SNAPSHOT
 Created-By: Apache Maven Bundle Plugin
 Export-Package: org.corpus_tools.peppermodules.flex;uses:="org.corpus_to
  ols.pepper.impl,org.corpus_tools.pepper.modules,org.corpus_tools.salt.g
- raph,org.eclipse.emf.common.util";version="1.0.7",org.corpus_tools.pepp
- ermodules.flex.model;version="1.0.7",org.corpus_tools.peppermodules.fle
- x.readers;uses:="org.corpus_tools.pepper.modules,org.corpus_tools.peppe
- rmodules.flex.model,org.corpus_tools.salt.common,org.xml.sax";version="
- 1.0.7",org.corpus_tools.peppermodules.flex.properties;uses:="org.corpus
- _tools.pepper.modules";version="1.0.7"
+ raph,org.eclipse.emf.common.util";version="1.0.8.SNAPSHOT",org.corpus_t
+ ools.peppermodules.flex.model;version="1.0.8.SNAPSHOT",org.corpus_tools
+ .peppermodules.flex.readers;uses:="org.corpus_tools.pepper.modules,org.
+ corpus_tools.peppermodules.flex.model,org.corpus_tools.salt.common,org.
+ xml.sax";version="1.0.8.SNAPSHOT",org.corpus_tools.peppermodules.flex.p
+ roperties;uses:="org.apache.commons.lang3.tuple,org.corpus_tools.pepper
+ .modules";version="1.0.8.SNAPSHOT"
 Import-Package: com.google.common.collect;version="[19.0,20)",javax.xml.
- transform,javax.xml.transform.stream,javax.xml.validation,org.corpus_to
- ols.pepper.common;version="[3.2,4)",org.corpus_tools.pepper.impl;versio
- n="[3.2,4)",org.corpus_tools.pepper.modules;version="[3.2,4)",org.corpu
- s_tools.salt;version="[3.3,4)",org.corpus_tools.salt.common;version="[3
- .3,4)",org.corpus_tools.salt.core;version="[3.3,4)",org.corpus_tools.sa
- lt.graph;version="[3.3,4)",org.eclipse.emf.common.util,org.slf4j,org.xm
- l.sax,org.xml.sax.ext
+ transform,javax.xml.transform.stream,javax.xml.validation,org.apache.co
+ mmons.lang3.tuple;version="[3.4,4)",org.corpus_tools.pepper.common;vers
+ ion="[3.2,4)",org.corpus_tools.pepper.impl;version="[3.2,4)",org.corpus
+ _tools.pepper.modules;version="[3.2,4)",org.corpus_tools.pepper.modules
+ .exceptions;version="[3.2,4)",org.corpus_tools.salt;version="[3.3,4)",o
+ rg.corpus_tools.salt.common;version="[3.3,4)",org.corpus_tools.salt.cor
+ e;version="[3.3,4)",org.corpus_tools.salt.graph;version="[3.3,4)",org.e
+ clipse.emf.common.util,org.slf4j,org.xml.sax,org.xml.sax.ext
 META-INF: /home/stephan/src/pepperModules-FLExModules/META-INF
 OSGI-INF: OSGI-INF
 Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
