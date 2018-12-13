@@ -44,7 +44,7 @@ import org.xml.sax.ext.DefaultHandler2;
 class FLExReader extends DefaultHandler2 implements FLExText {
 	
 	private Map<String, Integer> multipleAnnoMap = new HashMap<>();
-	private final PepperModuleProperties properties;
+	protected final PepperModuleProperties properties;
 	
 	/**
 	 * A constructor taking a properties argument and

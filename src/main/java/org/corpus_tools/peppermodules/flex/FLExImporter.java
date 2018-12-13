@@ -22,6 +22,7 @@ package org.corpus_tools.peppermodules.flex;
 import org.corpus_tools.pepper.impl.PepperImporterImpl; 
 import org.corpus_tools.pepper.modules.PepperImporter;
 import org.corpus_tools.pepper.modules.PepperMapper;
+import org.corpus_tools.peppermodules.flex.properties.FLExImporterProperties;
 import org.corpus_tools.salt.graph.Identifier;
 import org.eclipse.emf.common.util.URI;
 import org.osgi.service.component.annotations.Component;
@@ -45,6 +46,7 @@ public class FLExImporter extends PepperImporterImpl implements PepperImporter{
 		setDesc("An importer for the XML format written by SIL FLEx (FieldWorks Language Explorer), FLExText.");
 		addSupportedFormat("xml", "1.0", null);
 		getDocumentEndings().add("flextext");
+		this.setProperties(new FLExImporterProperties());
 	}
 	
 	/* (non-Javadoc)
