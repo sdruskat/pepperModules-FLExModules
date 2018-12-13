@@ -84,11 +84,33 @@ to the XML schema XSD file supplied by SIL, paragraphs cannot have annotations).
 
 ### Properties
 
-|      Property     |                                                  Description                                                   |                               Example                                |
-|-------------------|----------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|
-| `languageMap`     | A map with original 'lang' strings and the target strings the original should be changed to during conversion. | `<property key="languageMap">ENGLISH=en,NORTH-AMBRYM=mmg</property>` |
-| `typeMap`         | A map with original 'type' strings and the target strings the original should be changed to during conversion. | `<property key="typeMap">txt=tx,gls=ge</property>`                   |
-| `dropAnnotations` | A list of annotations that should be ignored during conversion. Annotations are defined as `{phrase\|word\|morph}::{language}:name`, of which the layer (the first) and the language (the second) element are optional. `languages` is a reserved name and will drop all language meta annotations from the child elements of `<languages/>`.                                              | `<property key="dropAnnotations">languages,morph::en:hn,fr:gls,morph::dro,xxx</property>`                   |
+|      Property     |                                                  Description                                                   |                               Example                                |                                                                                                                                                                                                                                    |                                                                                           |
+|-------------------|----------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
+| `languageMap`     | A map with original 'lang' strings and the target strings the original should be changed to during conversion. | `<property key="languageMap">ENGLISH=en,NORTH-AMBRYM=mmg</property>` |                                                                                                                                                                                                                                    |                                                                                           |
+| `typeMap`         | A map with original 'type' strings and the target strings the original should be changed to during conversion. | `<property key="typeMap">txt=tx,gls=ge</property>`                   |                                                                                                                                                                                                                                    |                                                                                           |
+| `dropAnnotations` | A list of annotations that should be ignored during conversion. Annotations are defined as `{phrase\           | word\                                                                | morph}::{language}:name`, of which the layer (the first) and the language (the second) element are optional. `languages` is a reserved name and will drop all language meta annotations from the child elements of `<languages/>`. | `<property key="dropAnnotations">languages,morph::en:hn,fr:gls,morph::dro,xxx</property>` |
+| `annotationMap`   | A map whose keys are FLEx annotation and whose values are annotations they should be mapped to.                | `<property key="annotationMap">word::en:gls=ge,morph::en:gls=ps</property>`|                                                                     |                                                                                                                                                                                                                                    |                                                                                           |
+	 *  
+	 *  Syntax:
+	 *  
+	 *  - keys: `{interlinear-text|paragraph|phrase|word|morph}::{language}:name`
+	 *  - values: `name`
+	 *  - list: `key=value, ...`
+	 *  
+	 *  Behaviour:
+	 *  
+	 *  For annotations matching the key pattern, the name will
+	 *  be changed to the `name` value. `language` will not be
+	 *  changed, layer neither.
+	 *  
+	 *  Example:
+	 *  
+	 *  `annotationMap=word::en:gls=ge` will change the FLEx-notated
+	 *  annotation `<word><item type="gls" lang="en">green</item></word>`
+	 *  to an {@link SAnnotation} on an {@link SLayer} named "word"
+	 *  with namespace "en" and name "ge".
+	 *  
+	 */                                                                                                               |                                                                      |                                                                                                                                                                                                                                    |                                                                                           |
 
 
 ## One document per file

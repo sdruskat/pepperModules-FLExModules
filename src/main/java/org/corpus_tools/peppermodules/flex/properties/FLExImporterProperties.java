@@ -23,7 +23,6 @@
 package org.corpus_tools.peppermodules.flex.properties;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +32,8 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Triple;
 import org.corpus_tools.pepper.modules.PepperModuleProperties;
 import org.corpus_tools.pepper.modules.PepperModuleProperty;
+import org.corpus_tools.salt.core.SAnnotation;
+import org.corpus_tools.salt.core.SLayer;
 
 /**
  * Properties for the FLExImporter.
@@ -72,6 +73,31 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	 *  `<languages/>`.
 	 */
 	static final String PROP_DROP_ANNOTATIONS = "dropAnnotations";
+	/**
+	 *  A map whose keys are FLEx annotation and whose
+	 *  values are annotations they should be mapped to.
+	 *  
+	 *  Syntax:
+	 *  
+	 *  - keys: `{interlinear-text|paragraph|phrase|word|morph}::{language}:name`
+	 *  - values: `name`
+	 *  - list: `key=value, ...`
+	 *  
+	 *  Behaviour:
+	 *  
+	 *  For annotations matching the key pattern, the name will
+	 *  be changed to the `name` value. `language` will not be
+	 *  changed, layer neither.
+	 *  
+	 *  Example:
+	 *  
+	 *  `annotationMap=word::en:gls=ge` will change the FLEx-notated
+	 *  annotation `<word><item type="gls" lang="en">green</item></word>`
+	 *  to an {@link SAnnotation} on an {@link SLayer} named "word"
+	 *  with namespace "en" and name "ge".
+	 *  
+	 */
+	static final String PROP_ANNOTATION_MAP = "annotationMap";
 	/**
 	 * A constant for the the mapping symbol in
 	 * {@link #PROP_LANGUAGEMAP} and {@link #PROP_TYPEMAP}.
