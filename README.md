@@ -115,10 +115,15 @@ Features are developed as usual in feature branches and merged back onto
 ## Releases
 
 Releases are tagged as such on GitHub and must be released to Maven Central.
-This is done by running `mvn jgitflow:release-start` and 
-`mvn jgitflow:release-finish` on `development`. The JGit-Flow plugin takes
-care of following the Gitflow workflow while performing a release to
-Maven Central at the same time.
+This is done by 
+
+1. making sure that `develop` and `master` have the same HEAD;
+2. running `mvn jgitflow:release-start` and 
+`mvn jgitflow:release-finish` on `development` - the JGit-Flow plugin takes
+care of following the Gitflow workflow while performing a deploy to
+Sonatype OSSRH at the same time;
+3. Manually closing and releasing the repository from [Sonatype OSSRH](https://oss.sonatype.org);
+4. Cleaning and building the project once to bring the MANIFEST.MF version no. up to date with the POM.
 
 Note that the staged release will still have to be released manually through
 <https://oss.sonatype.org/>.
