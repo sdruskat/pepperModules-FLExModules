@@ -150,17 +150,20 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	public Map<Triple<String,String,String>,String> getAnnotationMap() {
 		Map<Triple<String,String,String>,String> map = new HashMap<>();
 		String prop = (String) getProperty(PROP_ANNOTATIONMAP).getValue();
-		String[] split = prop.split(",");
-		for (String mapping : split) {
-			String[] newNameSplit = mapping.split("=");
-			if (newNameSplit.length == 2) {
-				String tripleString = newNameSplit[0];
-				String newName = newNameSplit[1];
-				Triple<String, String, String> triple = createTripleFromString(tripleString);
-				map.put(triple, newName);
-			}
-			else {
-				throw new PepperModuleException("Property 'annotationMap' is formatted incorrectly (no '=' found for value).");
+		if (prop != null) {
+			String[] split = prop.split(",");
+			for (String mapping : split) {
+				String[] newNameSplit = mapping.split("=");
+				if (newNameSplit.length == 2) {
+					String tripleString = newNameSplit[0];
+					String newName = newNameSplit[1];
+					Triple<String, String, String> triple = createTripleFromString(tripleString);
+					map.put(triple, newName);
+				}
+				else {
+					throw new PepperModuleException(
+							"Property 'annotationMap' is formatted incorrectly (no '=' found for value).");
+				}
 			}
 		}
 		return map;
