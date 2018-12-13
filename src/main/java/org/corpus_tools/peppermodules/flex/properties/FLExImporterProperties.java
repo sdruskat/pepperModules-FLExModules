@@ -32,6 +32,7 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Triple;
 import org.corpus_tools.pepper.modules.PepperModuleProperties;
 import org.corpus_tools.pepper.modules.PepperModuleProperty;
+import org.corpus_tools.pepper.modules.exceptions.PepperModuleException;
 import org.corpus_tools.salt.core.SAnnotation;
 import org.corpus_tools.salt.core.SLayer;
 
@@ -97,7 +98,7 @@ public class FLExImporterProperties extends PepperModuleProperties {
 	 *  with namespace "en" and name "ge".
 	 *  
 	 */
-	static final String PROP_ANNOTATION_MAP = "annotationMap";
+	static final String PROP_ANNOTATIONMAP = "annotationMap";
 	/**
 	 * A constant for the the mapping symbol in
 	 * {@link #PROP_LANGUAGEMAP} and {@link #PROP_TYPEMAP}.
@@ -116,6 +117,9 @@ public class FLExImporterProperties extends PepperModuleProperties {
 			.isRequired(false).build());
 	addProperty(PepperModuleProperty.create().withName(PROP_DROP_ANNOTATIONS).withType(String.class).withDescription(
 			"List of annotations to be dropped during conversion. Syntax: '{phrase|word|morph}::{language}:name,languages,morph::en:hn,fr:gls,morph::dro,xxx'")
+			.isRequired(false).build());
+	addProperty(PepperModuleProperty.create().withName(PROP_ANNOTATIONMAP).withType(String.class).withDescription(
+			"map whose keys are FLEx annotation and whose values are annotations they should be mapped to. Syntax: '{interlinear-text|paragraph|phrase|word|morph}::{language}:name=name,morph::en:gls=ge'")
 			.isRequired(false).build());
 	}
 	
@@ -136,40 +140,30 @@ public class FLExImporterProperties extends PepperModuleProperties {
 			return list;
 		}
 		for (String annotation : ((String) getProperty(PROP_DROP_ANNOTATIONS).getValue()).split(",")) {
-			String layer = null;
-			String language = null;
-			String name = null;
-			String[] layerSplit = annotation.split("::");
-			if (layerSplit.length == 2) {
-				// layer::name | layer::language:name
-				layer = layerSplit[0].trim();
-				String[] languageNameSplit = null;
-				if ((languageNameSplit = layerSplit[1].split(":")).length == 2) {
-					// layer::language:name
-					language = languageNameSplit[0].trim();
-					name = languageNameSplit[1].trim();
-				}
-				else {
-					// layer::name
-					name = layerSplit[1];
-				}
-			}
-			else {
-				// layer:name | name | 'languages'
-				String[] languageNameSplit = annotation.split(":");
-				if (languageNameSplit.length == 2) {
-					// layer:name
-					language = languageNameSplit[0].trim();
-					name = languageNameSplit[1].trim();
-				}
-				else {
-					// name | 'languages'
-					name = annotation.trim();
-				}
-			}
-			list.add(Triple.of(layer, language, name));
+			Triple<String, String, String> triple = createTripleFromString(annotation);
+			list.add(triple);
 		}
 		return list;
+	}
+	
+	@SuppressWarnings("javadoc")
+	public Map<Triple<String,String,String>,String> getAnnotationMap() {
+		Map<Triple<String,String,String>,String> map = new HashMap<>();
+		String prop = (String) getProperty(PROP_ANNOTATIONMAP).getValue();
+		String[] split = prop.split(",");
+		for (String mapping : split) {
+			String[] newNameSplit = mapping.split("=");
+			if (newNameSplit.length == 2) {
+				String tripleString = newNameSplit[0];
+				String newName = newNameSplit[1];
+				Triple<String, String, String> triple = createTripleFromString(tripleString);
+				map.put(triple, newName);
+			}
+			else {
+				throw new PepperModuleException("Property 'annotationMap' is formatted incorrectly (no '=' found for value).");
+			}
+		}
+		return map;
 	}
 
 	/**
@@ -200,6 +194,41 @@ public class FLExImporterProperties extends PepperModuleProperties {
 			}
 		}
 		return map;
+	}
+
+	private Triple<String, String, String> createTripleFromString(String string) {
+		String layer = null;
+		String language = null;
+		String name = null;
+		String[] layerSplit = string.split("::");
+		if (layerSplit.length == 2) {
+			// layer::name | layer::language:name
+			layer = layerSplit[0].trim();
+			String[] languageNameSplit = null;
+			if ((languageNameSplit = layerSplit[1].split(":")).length == 2) {
+				// layer::language:name
+				language = languageNameSplit[0].trim();
+				name = languageNameSplit[1].trim();
+			}
+			else {
+				// layer::name
+				name = layerSplit[1];
+			}
+		}
+		else {
+			// layer:name | name | 'languages'
+			String[] languageNameSplit = string.split(":");
+			if (languageNameSplit.length == 2) {
+				// layer:name
+				language = languageNameSplit[0].trim();
+				name = languageNameSplit[1].trim();
+			}
+			else {
+				// name | 'languages'
+				name = string.trim();
+			}
+		}
+		return Triple.of(layer, language, name);
 	}
 
 }

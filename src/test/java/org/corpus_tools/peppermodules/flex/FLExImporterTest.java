@@ -392,6 +392,44 @@ public class FLExImporterTest extends PepperImporterTest {
 		}
 	}
 	
+	/**
+	 * Test whether annotations are correctly
+	 * mapped to other annotations during conversion according to
+	 * {@link FLExImporterProperties#}.
+	 * 
+	 */
+	@Test
+	public void testMarkerMapping() {
+		setTestFile("short-sample-drop.flextext");
+		setProperties("properties/map-annotation.properties");
+		start();
+		SDocumentGraph graph = getFixture().getSaltProject().getCorpusGraphs().get(0).getDocuments().get(0)
+				.getDocumentGraph();
+		assertNotNull(graph);
+		/* 
+		 * Check that annotations have been dropped according
+		 * to property 
+		 */
+		for (SNode node : graph.getNodes()) {
+			for (SLayer l : node.getLayers()) {
+				if (l.getName().equals("morph")) {
+					assertThat(node.getAnnotation("en::morphenhn"), is(notNullValue()));
+					assertThat(node.getAnnotation("fr::frgls"), is(notNullValue()));
+					assertThat(node.getAnnotation("fr::morphdro"), is(notNullValue()));
+					assertThat(node.getAnnotation("en::morphdro"), is(notNullValue()));
+					assertThat(node.getAnnotation("en::yyy"), is(notNullValue()));
+				}
+				else if (l.getName().equals("phrase")) {
+					assertThat(node.getAnnotation("fr::frgls"), is(notNullValue()));
+					assertThat(node.getAnnotation("de::yyy"), is(notNullValue()));
+				}
+				else if (l.getName().equals("word")) {
+					assertThat(node.getAnnotation("fr::yyy"), is(notNullValue()));
+				}
+			}
+		}
+	}
+	
 //	/**
 //	 * Test whether {@link Triple}s are correctly parsed from
 //	 * {@link FLExImporterProperties#getAnnotationsToDrop()}.
